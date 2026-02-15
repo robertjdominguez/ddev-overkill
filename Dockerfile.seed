@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package and install deps
+COPY scripts/package.json scripts/package-lock.json* ./
+RUN npm install
+
+# Copy scripts
+COPY scripts/ ./
+
+# Copy markdown files at build time (baked into image)
+COPY posts /posts
+COPY projects /projects
+
+ENV POSTS_DIR=/posts
+ENV PROJECTS_DIR=/projects
+
+CMD ["sh", "-c", "node ingest-markdown.js"]

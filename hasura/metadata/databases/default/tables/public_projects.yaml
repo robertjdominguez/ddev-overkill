@@ -1,0 +1,20 @@
+table:
+  schema: public
+  name: projects
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+select_permissions:
+  - role: public
+    permission:
+      columns:
+        - id
+        - slug
+        - title
+        - description
+        - url
+        - image
+        - tech_stack
+        - created_at
+      filter: {}

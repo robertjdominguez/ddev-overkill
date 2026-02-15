@@ -1,0 +1,23 @@
+table:
+  schema: public
+  name: posts
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+    updated_at:
+      custom_name: updatedAt
+select_permissions:
+  - role: public
+    permission:
+      columns:
+        - id
+        - slug
+        - title
+        - hook
+        - body
+        - image
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true

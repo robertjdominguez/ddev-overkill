@@ -1,0 +1,29 @@
+# Render.com deployment configuration
+# 
+# Usage:
+#   1. Push this directory to GitHub
+#   2. Create a new Web Service on Render.com
+#   3. Connect your GitHub repo
+#   4. Use this render.yaml or configure manually
+#
+# Or use the Render CLI:
+#   render yaml render.yaml
+
+services:
+  - type: web
+    name: mysite
+    env: docker
+    region: oregon
+    plan: starter
+    dockerComposePath: deploy/docker-compose.yml
+    dockerComposeVars:
+      - key: POSTGRES_PASSWORD
+        sync: false  # Set in Render dashboard
+      - key: HASURA_GRAPHQL_ADMIN_SECRET
+        sync: false
+      - key: HASURA_GRAPHQL_JWT_SECRET
+        sync: false
+    disk:
+      name: postgres
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
