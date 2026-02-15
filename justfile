@@ -13,6 +13,10 @@ seed-image:
 frontend:
     cd frontend && bun install && bun dev
 
+# Lint the frontend
+lint:
+    cd frontend && bun lint
+
 # Stop all containers
 down:
     docker compose down
