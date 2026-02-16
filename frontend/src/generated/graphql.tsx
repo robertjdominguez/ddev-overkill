@@ -931,24 +931,30 @@ export type Timestamptz_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
 };
 
+export type PostFieldsFragment = { __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null };
+
 export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetPostsQuery = { __typename?: 'query_root', posts: Array<{ __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null }> };
 
-
+export const PostFieldsFragmentDoc = gql`
+    fragment PostFields on posts {
+  id
+  slug
+  title
+  hook
+  image
+  createdAt
+}
+    `;
 export const GetPostsDocument = gql`
     query GetPosts {
   posts(order_by: {createdAt: desc}) {
-    id
-    slug
-    title
-    hook
-    image
-    createdAt
+    ...PostFields
   }
 }
-    `;
+    ${PostFieldsFragmentDoc}`;
 
 /**
  * __useGetPostsQuery__
