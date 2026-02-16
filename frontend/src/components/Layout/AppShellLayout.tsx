@@ -1,13 +1,36 @@
 import { AppShell, Burger, Affix, Group, Text, Container } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useLocation, useOutlet } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useLocation, useNavigationType, useOutlet } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import SideNav from './SideNav';
 
 export default function AppShellLayout() {
   const [opened, { toggle, close }] = useDisclosure();
   const location = useLocation();
+  const navigationType = useNavigationType();
   const currentOutlet = useOutlet();
+
+  const prevLocationKey = useRef(location.key);
+  const scrollPositions = useRef(new Map<string, number>());
+
+  useEffect(() => {
+    window.history.scrollRestoration = 'manual';
+  }, []);
+
+  useEffect(() => {
+    scrollPositions.current.set(prevLocationKey.current, window.scrollY);
+    prevLocationKey.current = location.key;
+  }, [location.key]);
+
+  const onExitComplete = () => {
+    if (navigationType === 'POP') {
+      const saved = scrollPositions.current.get(location.key);
+      window.scrollTo(0, saved ?? 0);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  };
 
   return (
     <AppShell padding={{ base: 'md', sm: 'xl' }} footer={{ height: 60 }}>
@@ -19,7 +42,7 @@ export default function AppShellLayout() {
 
       <AppShell.Main>
         <Container size="lg">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" onExitComplete={onExitComplete}>
             <motion.div
               key={location.pathname}
               initial="hidden"
