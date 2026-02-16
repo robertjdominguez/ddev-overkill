@@ -5,11 +5,13 @@ import Post from './pages/post'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/posts" element={<Posts />} />
-      <Route path="/posts/:slug" element={<Post />} />
-    </Routes>
+    <div className="min-h-screen bg-violet-900">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/posts" element={<Posts />} />
+        <Route path="/posts/:slug" element={<Post />} />
+      </Routes>
+    </div>
   )
 }
 
