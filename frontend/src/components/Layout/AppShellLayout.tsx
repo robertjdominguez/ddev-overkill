@@ -15,7 +15,7 @@ export default function AppShellLayout() {
       <SideNav opened={opened} onClose={close} />
 
       <AppShell.Main>
-        <Container size="sm">
+        <Container size="lg">
           <Outlet />
         </Container>
       </AppShell.Main>

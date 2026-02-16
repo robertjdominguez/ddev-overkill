@@ -13,9 +13,14 @@ export const POST_FRAGMENT = gql`
 
 export const GET_POSTS = gql`
   ${POST_FRAGMENT}
-  query GetPosts {
-    posts(order_by: { createdAt: desc }) {
+  query GetPosts($limit: Int, $offset: Int) {
+    posts(order_by: { createdAt: desc }, limit: $limit, offset: $offset) {
       ...PostFields
+    }
+    posts_aggregate {
+      aggregate {
+        count
+      }
     }
   }
 `;

@@ -933,10 +933,13 @@ export type Timestamptz_Comparison_Exp = {
 
 export type PostFieldsFragment = { __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null };
 
-export type GetPostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetPostsQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
 
 
-export type GetPostsQuery = { __typename?: 'query_root', posts: Array<{ __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null }> };
+export type GetPostsQuery = { __typename?: 'query_root', posts: Array<{ __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null }>, posts_aggregate: { __typename?: 'posts_aggregate', aggregate?: { __typename?: 'posts_aggregate_fields', count: number } | null } };
 
 export const PostFieldsFragmentDoc = gql`
     fragment PostFields on posts {
@@ -949,9 +952,14 @@ export const PostFieldsFragmentDoc = gql`
 }
     `;
 export const GetPostsDocument = gql`
-    query GetPosts {
-  posts(order_by: {createdAt: desc}) {
+    query GetPosts($limit: Int, $offset: Int) {
+  posts(order_by: {createdAt: desc}, limit: $limit, offset: $offset) {
     ...PostFields
+  }
+  posts_aggregate {
+    aggregate {
+      count
+    }
   }
 }
     ${PostFieldsFragmentDoc}`;
@@ -968,6 +976,8 @@ export const GetPostsDocument = gql`
  * @example
  * const { data, loading, error } = useGetPostsQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *   },
  * });
  */

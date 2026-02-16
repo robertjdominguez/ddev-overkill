@@ -1,0 +1,15 @@
+.card {
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--mantine-color-default-hover);
+    color: inherit;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--mantine-primary-color-filled);
+  }
+}
