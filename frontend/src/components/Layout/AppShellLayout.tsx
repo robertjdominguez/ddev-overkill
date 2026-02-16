@@ -1,10 +1,13 @@
 import { AppShell, Burger, Affix, Group, Text, Container } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Outlet } from 'react-router-dom';
+import { useLocation, useOutlet } from 'react-router-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import SideNav from './SideNav';
 
 export default function AppShellLayout() {
   const [opened, { toggle, close }] = useDisclosure();
+  const location = useLocation();
+  const currentOutlet = useOutlet();
 
   return (
     <AppShell padding={{ base: 'md', sm: 'xl' }} footer={{ height: 60 }}>
@@ -16,7 +19,16 @@ export default function AppShellLayout() {
 
       <AppShell.Main>
         <Container size="lg">
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              {currentOutlet}
+            </motion.div>
+          </AnimatePresence>
         </Container>
       </AppShell.Main>
 
