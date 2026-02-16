@@ -931,6 +931,13 @@ export type Timestamptz_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
 };
 
+export type GetPostBySlugQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type GetPostBySlugQuery = { __typename?: 'query_root', posts: Array<{ __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, body?: string | null, image?: string | null, createdAt?: any | null }> };
+
 export type PostFieldsFragment = { __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null };
 
 export type GetPostsQueryVariables = Exact<{
@@ -951,6 +958,55 @@ export const PostFieldsFragmentDoc = gql`
   createdAt
 }
     `;
+export const GetPostBySlugDocument = gql`
+    query GetPostBySlug($slug: String!) {
+  posts(where: {slug: {_eq: $slug}}, limit: 1) {
+    id
+    slug
+    title
+    hook
+    body
+    image
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetPostBySlugQuery__
+ *
+ * To run a query within a React component, call `useGetPostBySlugQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPostBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPostBySlugQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetPostBySlugQuery(baseOptions: Apollo.QueryHookOptions<GetPostBySlugQuery, GetPostBySlugQueryVariables> & ({ variables: GetPostBySlugQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPostBySlugQuery, GetPostBySlugQueryVariables>(GetPostBySlugDocument, options);
+      }
+export function useGetPostBySlugLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPostBySlugQuery, GetPostBySlugQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPostBySlugQuery, GetPostBySlugQueryVariables>(GetPostBySlugDocument, options);
+        }
+// @ts-ignore
+export function useGetPostBySlugSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetPostBySlugQuery, GetPostBySlugQueryVariables>): Apollo.UseSuspenseQueryResult<GetPostBySlugQuery, GetPostBySlugQueryVariables>;
+export function useGetPostBySlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPostBySlugQuery, GetPostBySlugQueryVariables>): Apollo.UseSuspenseQueryResult<GetPostBySlugQuery | undefined, GetPostBySlugQueryVariables>;
+export function useGetPostBySlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPostBySlugQuery, GetPostBySlugQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPostBySlugQuery, GetPostBySlugQueryVariables>(GetPostBySlugDocument, options);
+        }
+export type GetPostBySlugQueryHookResult = ReturnType<typeof useGetPostBySlugQuery>;
+export type GetPostBySlugLazyQueryHookResult = ReturnType<typeof useGetPostBySlugLazyQuery>;
+export type GetPostBySlugSuspenseQueryHookResult = ReturnType<typeof useGetPostBySlugSuspenseQuery>;
+export type GetPostBySlugQueryResult = Apollo.QueryResult<GetPostBySlugQuery, GetPostBySlugQueryVariables>;
 export const GetPostsDocument = gql`
     query GetPosts($limit: Int, $offset: Int) {
   posts(order_by: {createdAt: desc}, limit: $limit, offset: $offset) {

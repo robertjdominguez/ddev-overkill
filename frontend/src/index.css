@@ -52,3 +52,13 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+.wmde-markdown ul {
+  list-style: disc;
+  padding-left: 2em;
+}
+
+.wmde-markdown ol {
+  list-style: decimal;
+  padding-left: 2em;
+}
