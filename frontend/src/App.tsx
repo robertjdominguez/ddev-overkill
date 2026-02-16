@@ -1,18 +1,19 @@
-import { Routes, Route } from 'react-router-dom'
-import Home from './pages/home'
-import Posts from './pages/posts'
-import Post from './pages/post'
+import { Routes, Route } from 'react-router-dom';
+import AppShellLayout from './components/Layout/AppShellLayout';
+import Home from './pages/home';
+import Posts from './pages/posts';
+import Post from './pages/post';
 
 function App() {
   return (
-    <div className="min-h-screen bg-violet-900">
-      <Routes>
-        <Route path="/" element={<Home />} />
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route element={<AppShellLayout />}>
         <Route path="/posts" element={<Posts />} />
         <Route path="/posts/:slug" element={<Post />} />
-      </Routes>
-    </div>
-  )
+      </Route>
+    </Routes>
+  );
 }
 
-export default App
+export default App;
