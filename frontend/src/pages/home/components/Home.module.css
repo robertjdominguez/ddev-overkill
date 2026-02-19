@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   place-items: center;
+  align-content: center;
   min-height: 80vh;
   gap: var(--mantine-spacing-xl);
 }

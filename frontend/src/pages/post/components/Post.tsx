@@ -34,29 +34,31 @@ export default function Post() {
   const post = data?.posts[0];
 
   return (
-    <motion.div variants={container} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-md)' }}>
+    <motion.div variants={container} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-xl)', paddingTop: 'var(--mantine-spacing-lg)' }}>
       <motion.div variants={item}>
         {loading && <p>Loading…</p>}
         {error && <p>Error: {error.message}</p>}
         {!loading && !error && !post && <p>Post not found</p>}
       </motion.div>
-      <motion.div variants={item} style={{ color: 'var(--mantine-color-dimmed)', fontSize: '14px' }}>
-        {post?.createdAt && new Date(post.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-      </motion.div>
-      <motion.div variants={item} data-color-mode="dark">
-        {post?.body && (
-          <MDEditor.Markdown
-            source={post.body}
-            rehypePlugins={[[rehypeSanitize]]}
-            style={{
-              background: 'none',
-              font: 'inherit',
-              fontFamily: 'inherit',
-              fontSize: '15px',
-              color: 'light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-3))',
-            }}
-          />
-        )}
+      <motion.div variants={item} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-sm)' }}>
+        <div style={{ color: 'var(--mantine-color-dimmed)', fontSize: '14px' }}>
+          {post?.createdAt && new Date(post.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+        </div>
+        <div data-color-mode="dark">
+          {post?.body && (
+            <MDEditor.Markdown
+              source={post.body}
+              rehypePlugins={[[rehypeSanitize]]}
+              style={{
+                background: 'none',
+                font: 'inherit',
+                fontFamily: 'inherit',
+                fontSize: '15px',
+                color: 'light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-3))',
+              }}
+            />
+          )}
+        </div>
       </motion.div>
     </motion.div>
   );

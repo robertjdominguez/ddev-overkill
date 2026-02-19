@@ -33,7 +33,7 @@ export default function AppShellLayout() {
   };
 
   return (
-    <AppShell padding={{ base: 'md', sm: 'xl' }}>
+    <AppShell padding={{ base: 'lg', sm: 'xl' }}>
       <Affix position={{ top: 20, right: 20 }}>
         <Burger opened={opened} onClick={toggle} size="md" aria-label="Open navigation" />
       </Affix>
@@ -45,9 +45,10 @@ export default function AppShellLayout() {
           <AnimatePresence mode="wait" onExitComplete={onExitComplete}>
             <motion.div
               key={location.pathname}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
             >
               {currentOutlet}
             </motion.div>

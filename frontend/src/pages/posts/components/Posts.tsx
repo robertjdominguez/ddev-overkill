@@ -24,27 +24,23 @@ const item = {
 
 export default function Posts() {
   return (
-    <motion.div variants={container} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-md)' }}>
+    <motion.div variants={container} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-xl)', paddingTop: 'var(--mantine-spacing-lg)' }}>
       <motion.div variants={item}>
         <Title order={1}>
           Things I <Text span c="accent.5" inherit>write</Text> about
         </Title>
       </motion.div>
-      <motion.div variants={item}>
+      <motion.div variants={item} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-sm)' }}>
         <Text c="dimmed">
           I work in engineering leadership and primarily focus on product and DX at
           PromptQL.
         </Text>
-      </motion.div>
-      <motion.div variants={item}>
         <Text c="dimmed">
           Most of the posts you'll find talk about efforts made in automating
           mundane tasks, speeding up workflows, and learning new technologies.
           Hopefully something will spark an interest or help you with a small
           portion of a problem you're facing. Or, at the very least, entertain you.
         </Text>
-      </motion.div>
-      <motion.div variants={item}>
         <Text c="dimmed">
           I spent nearly a decade in the classroom and working with some amazing
           educators. As such, there's a pretty large backlog of pedagogical and

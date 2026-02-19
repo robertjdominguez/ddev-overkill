@@ -25,7 +25,7 @@ const item = {
 
 export default function Home() {
   return (
-    <motion.div variants={container} className={classes.hero}>
+    <motion.div variants={container} initial="hidden" animate="visible" className={classes.hero}>
       <motion.div variants={item} className={classes.deets}>
         <Title order={1}>I'm Rob, welcome to my site.</Title>
         <Text size="lg" c="dimmed">
