@@ -33,15 +33,15 @@ export default function AppShellLayout() {
   };
 
   return (
-    <AppShell padding={{ base: 'md', sm: 'xl' }} footer={{ height: 60 }}>
-      <Affix position={{ bottom: 60, right: 20 }}>
+    <AppShell padding={{ base: 'md', sm: 'xl' }}>
+      <Affix position={{ top: 20, right: 20 }}>
         <Burger opened={opened} onClick={toggle} size="md" aria-label="Open navigation" />
       </Affix>
 
       <SideNav opened={opened} onClose={close} />
 
       <AppShell.Main>
-        <Container size="lg">
+        <Container size="md">
           <AnimatePresence mode="wait" onExitComplete={onExitComplete}>
             <motion.div
               key={location.pathname}
@@ -55,11 +55,13 @@ export default function AppShellLayout() {
         </Container>
       </AppShell.Main>
 
-      <AppShell.Footer p="md">
-        <Group justify="center">
-          <Text size="sm" c="dimmed">&copy; {new Date().getFullYear()} Rob Dominguez</Text>
-        </Group>
-      </AppShell.Footer>
+      {location.pathname !== '/' && (
+        <Container size="md" py="xl">
+          <Group justify="center">
+            <Text size="sm" c="dimmed">&copy; {new Date().getFullYear()} Rob Dominguez</Text>
+          </Group>
+        </Container>
+      )}
     </AppShell>
   );
 }

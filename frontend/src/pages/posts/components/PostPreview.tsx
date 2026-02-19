@@ -23,7 +23,7 @@ export default function PostPreview({ post }: { post: PostFieldsFragment }) {
     >
       <Stack gap="xs" flex={1}>
         {date && (
-          <Text size="xs" c="violet" tt="uppercase" fw={400}>
+          <Text size="xs" c="accent.5" tt="uppercase" fw={400}>
             {date}
           </Text>
         )}

@@ -27,7 +27,7 @@ export default function Posts() {
     <motion.div variants={container} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-md)' }}>
       <motion.div variants={item}>
         <Title order={1}>
-          Things I <Text span c="blue" inherit>write</Text> about
+          Things I <Text span c="accent.5" inherit>write</Text> about
         </Title>
       </motion.div>
       <motion.div variants={item}>
