@@ -1,4 +1,7 @@
+import { Title, Text, Button, Group, Box } from '@mantine/core';
+import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
+import classes from './Home.module.css';
 
 const container = {
   hidden: {
@@ -22,12 +25,30 @@ const item = {
 
 export default function Home() {
   return (
-    <motion.div variants={container} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-md)' }}>
-      <motion.div variants={item}>
-        <h1>Home</h1>
+    <motion.div variants={container} className={classes.hero}>
+      <motion.div variants={item} className={classes.deets}>
+        <Title order={1}>I'm Rob, welcome to my site.</Title>
+        <Text size="lg" c="dimmed">
+          I'm an{' '}
+          <Text span c="accent.5" inherit>
+            <s>software engineer</s> engineering manager
+          </Text>{' '}
+          that likes to solve problems. Currently, I'm working on product at{' '}
+          <Text component="a" href="https://promptql.io" target="_blank" inherit c="accent.5">
+            PromptQL
+          </Text>
+          .
+        </Text>
+        <Group>
+          <Button component={Link} to="/posts" size="md">
+            🤙 What I'm writing...
+          </Button>
+        </Group>
       </motion.div>
-      <motion.div variants={item}>
-        <p>Welcome to my site</p>
+      <motion.div variants={item} style={{ display: 'flex', justifyContent: 'center' }}>
+        <Box className={classes.imageWrapper}>
+          <img src="/face.png" alt="Rob Dominguez" className={classes.image} />
+        </Box>
       </motion.div>
     </motion.div>
   );

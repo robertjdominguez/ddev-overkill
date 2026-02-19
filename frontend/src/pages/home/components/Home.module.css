@@ -1,0 +1,29 @@
+.hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  place-items: center;
+  min-height: 80vh;
+  gap: var(--mantine-spacing-xl);
+}
+
+.deets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-md);
+}
+
+.imageWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--mantine-primary-color-filled);
+  border-radius: 50%;
+  border: solid 2px var(--mantine-color-dark-0);
+}
+
+.image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  filter: grayscale(100%);
+}
