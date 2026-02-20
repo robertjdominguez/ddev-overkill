@@ -1,7 +1,12 @@
 .sidebar {
-  position: sticky;
-  top: 20vh;
   align-self: start;
+}
+
+@media (min-width: 769px) {
+  .sidebar {
+    position: sticky;
+    top: 20vh;
+  }
 }
 
 .avatarWrapper {

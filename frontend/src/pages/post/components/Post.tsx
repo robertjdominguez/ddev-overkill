@@ -35,7 +35,7 @@ export default function Post() {
   const post = data?.posts[0];
 
   return (
-    <motion.div variants={container} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-xl)', paddingTop: 'var(--mantine-spacing-lg)' }}>
+    <motion.div variants={container} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-xl)' }}>
       <motion.div variants={item}>
         {loading && <p>Loading…</p>}
         {error && <p>Error: {error.message}</p>}

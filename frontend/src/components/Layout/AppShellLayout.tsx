@@ -44,7 +44,7 @@ export default function AppShellLayout() {
         <Container size="md">
           <AnimatePresence mode="wait" onExitComplete={onExitComplete}>
             <motion.div
-              key={location.pathname}
+              key={location.pathname.startsWith('/posts') ? '/posts' : location.pathname}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
