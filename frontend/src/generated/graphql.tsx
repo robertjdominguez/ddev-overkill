@@ -260,9 +260,22 @@ export type Posts = {
   hook?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   image?: Maybe<Scalars['String']['output']>;
+  /** Similar posts based on vector embedding cosine similarity */
+  similarPosts?: Maybe<Array<Posts>>;
   slug: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+
+/** @graphql({"order_by": {"created_at": "desc"}}) */
+export type PostsSimilarPostsArgs = {
+  args?: InputMaybe<SimilarPosts_Posts_Args>;
+  distinct_on?: InputMaybe<Array<Posts_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Posts_Order_By>>;
+  where?: InputMaybe<Posts_Bool_Exp>;
 };
 
 /** aggregated selection of "posts" */
@@ -880,6 +893,10 @@ export type Query_RootSearchPostsArgs = {
   query: Scalars['String']['input'];
 };
 
+export type SimilarPosts_Posts_Args = {
+  limit_count?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type Subscription_Root = {
   __typename?: 'subscription_root';
   /** fetch data from the table: "posts" */
@@ -991,7 +1008,7 @@ export type GetPostBySlugQueryVariables = Exact<{
 }>;
 
 
-export type GetPostBySlugQuery = { __typename?: 'query_root', posts: Array<{ __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, body?: string | null, image?: string | null, createdAt?: any | null }> };
+export type GetPostBySlugQuery = { __typename?: 'query_root', posts: Array<{ __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, body?: string | null, image?: string | null, createdAt?: any | null, similarPosts?: Array<{ __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null }> | null }> };
 
 export type PostFieldsFragment = { __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null };
 
@@ -1031,6 +1048,14 @@ export const GetPostBySlugDocument = gql`
     body
     image
     createdAt
+    similarPosts(limit: 5) {
+      id
+      slug
+      title
+      hook
+      image
+      createdAt
+    }
   }
 }
     `;

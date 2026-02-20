@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from 'rehype-sanitize';
 import { useGetPostBySlugQuery } from '@/generated/graphql';
+import SimilarPosts from './SimilarPosts';
 
 const container = {
   hidden: {
@@ -60,6 +61,11 @@ export default function Post() {
           )}
         </div>
       </motion.div>
+      {post?.similarPosts && post.similarPosts.length > 0 && (
+        <motion.div initial="hidden" animate="visible" variants={item}>
+          <SimilarPosts posts={post.similarPosts} />
+        </motion.div>
+      )}
     </motion.div>
   );
 }

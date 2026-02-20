@@ -7,6 +7,14 @@ configuration:
       custom_name: createdAt
     updated_at:
       custom_name: updatedAt
+computed_fields:
+  - name: similarPosts
+    definition:
+      function:
+        schema: public
+        name: similar_posts
+      table_argument: post_row
+    comment: Similar posts based on vector embedding cosine similarity
 select_permissions:
   - role: public
     permission:
