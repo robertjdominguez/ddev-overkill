@@ -1,10 +1,27 @@
 const fs = require('fs');
 const path = require('path');
 const { Client } = require('pg');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const POSTS_DIR = process.env.POSTS_DIR || '/posts';
 const PROJECTS_DIR = process.env.PROJECTS_DIR || '/projects';
+const ASSETS_DIR = process.env.ASSETS_DIR || '/assets';
 const PGPASSWORD = process.env.PGPASSWORD || 'postgrespassword';
+
+const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'http://minio:9000';
+const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'minioadmin';
+const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY || 'minioadmin';
+const MINIO_BUCKET = process.env.MINIO_BUCKET || 'assets';
+
+const s3 = new S3Client({
+  endpoint: MINIO_ENDPOINT,
+  region: 'us-east-1',
+  credentials: {
+    accessKeyId: MINIO_ACCESS_KEY,
+    secretAccessKey: MINIO_SECRET_KEY,
+  },
+  forcePathStyle: true,
+});
 
 const client = new Client({
   host: process.env.PGHOST || 'postgres',
@@ -116,20 +133,63 @@ async function upsertProject(client, project) {
   ]);
 }
 
+const MIME_TYPES = {
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.svg': 'image/svg+xml',
+};
+
+function isLocalPath(img) {
+  return img && !img.startsWith('http');
+}
+
+async function uploadImageToMinio(localPath) {
+  // Strip leading slash to get relative path
+  const relativePath = localPath.replace(/^\//, '');
+  const filePath = path.join(ASSETS_DIR, relativePath);
+
+  if (!fs.existsSync(filePath)) {
+    console.warn(`  ⚠ Asset not found: ${filePath} — keeping original value`);
+    return localPath;
+  }
+
+  const body = fs.readFileSync(filePath);
+  const ext = path.extname(filePath).toLowerCase();
+  const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+
+  await s3.send(new PutObjectCommand({
+    Bucket: MINIO_BUCKET,
+    Key: relativePath,
+    Body: body,
+    ContentType: contentType,
+  }));
+
+  const rewrittenUrl = `/storage/${MINIO_BUCKET}/${relativePath}`;
+  console.log(`  ↑ Uploaded ${relativePath} → ${rewrittenUrl}`);
+  return rewrittenUrl;
+}
+
 async function main() {
   console.log('Starting markdown ingestion...');
   console.log(`Posts directory: ${POSTS_DIR}`);
   console.log(`Projects directory: ${PROJECTS_DIR}`);
-  
+  console.log(`Assets directory: ${ASSETS_DIR}`);
+
   await client.connect();
   console.log('Connected to Postgres');
 
   // Ingest posts
   const posts = parseMarkdownFiles(POSTS_DIR);
   console.log(`Found ${posts.length} posts`);
-  
+
   for (const post of posts) {
     try {
+      if (isLocalPath(post.image)) {
+        post.image = await uploadImageToMinio(post.image);
+      }
       await upsertPost(client, post);
       console.log(`✓ Post: ${post.title}`);
     } catch (err) {
@@ -140,16 +200,19 @@ async function main() {
   // Ingest projects
   const projects = parseMarkdownFiles(PROJECTS_DIR);
   console.log(`Found ${projects.length} projects`);
-  
+
   for (const project of projects) {
     try {
+      if (isLocalPath(project.image)) {
+        project.image = await uploadImageToMinio(project.image);
+      }
       await upsertProject(client, project);
       console.log(`✓ Project: ${project.title}`);
     } catch (err) {
       console.error(`✗ Failed: ${project.title}`, err.message);
     }
   }
-  
+
   await client.end();
   console.log('Done!');
 }

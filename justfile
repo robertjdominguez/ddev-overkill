@@ -44,6 +44,10 @@ actions:
 actions-logs:
     docker compose logs -f actions
 
+# Open MinIO console in browser
+minio-console:
+    open http://localhost:9001
+
 # Generate embeddings for all posts
 generate-embeddings:
     curl -s -X POST http://localhost:3001/generate-embeddings \

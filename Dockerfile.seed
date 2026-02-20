@@ -13,7 +13,11 @@ COPY scripts/ ./
 COPY posts /posts
 COPY projects /projects
 
+# Copy static assets for MinIO upload
+COPY assets /assets
+
 ENV POSTS_DIR=/posts
 ENV PROJECTS_DIR=/projects
+ENV ASSETS_DIR=/assets
 
 CMD ["sh", "-c", "node ingest-markdown.js"]

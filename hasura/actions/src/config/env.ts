@@ -5,6 +5,10 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   OPENAI_API_KEY: z.string().min(1),
   HASURA_GRAPHQL_ADMIN_SECRET: z.string().min(1).default("myadminsecret"),
+  MINIO_ENDPOINT: z.string().default("http://minio:9000"),
+  MINIO_ACCESS_KEY: z.string().default("minioadmin"),
+  MINIO_SECRET_KEY: z.string().default("minioadmin"),
+  MINIO_BUCKET: z.string().default("assets"),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

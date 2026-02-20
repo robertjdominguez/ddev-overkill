@@ -23,7 +23,11 @@ services:
         sync: false
       - key: HASURA_GRAPHQL_JWT_SECRET
         sync: false
+      - key: MINIO_ROOT_USER
+        sync: false
+      - key: MINIO_ROOT_PASSWORD
+        sync: false
     disk:
-      name: postgres
-      mountPath: /var/lib/postgresql/data
-      sizeGB: 1
+      name: data
+      mountPath: /data
+      sizeGB: 2
