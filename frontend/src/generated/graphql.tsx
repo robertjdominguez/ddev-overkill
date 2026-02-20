@@ -16,6 +16,13 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   timestamptz: { input: any; output: any; }
+  vector: { input: any; output: any; }
+};
+
+export type HelloOutput = {
+  __typename?: 'HelloOutput';
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
 };
 
 /** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
@@ -29,6 +36,16 @@ export type Int_Comparison_Exp = {
   _lte?: InputMaybe<Scalars['Int']['input']>;
   _neq?: InputMaybe<Scalars['Int']['input']>;
   _nin?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
+
+export type SearchResult = {
+  __typename?: 'SearchResult';
+  createdAt: Scalars['timestamptz']['output'];
+  hook?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  similarity: Scalars['Float']['output'];
+  slug: Scalars['String']['output'];
+  title: Scalars['String']['output'];
 };
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
@@ -239,6 +256,7 @@ export type Posts = {
   __typename?: 'posts';
   body?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  embedding?: Maybe<Scalars['vector']['output']>;
   hook?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   image?: Maybe<Scalars['String']['output']>;
@@ -290,6 +308,7 @@ export type Posts_Bool_Exp = {
   _or?: InputMaybe<Array<Posts_Bool_Exp>>;
   body?: InputMaybe<String_Comparison_Exp>;
   createdAt?: InputMaybe<Timestamptz_Comparison_Exp>;
+  embedding?: InputMaybe<Vector_Comparison_Exp>;
   hook?: InputMaybe<String_Comparison_Exp>;
   id?: InputMaybe<Int_Comparison_Exp>;
   image?: InputMaybe<String_Comparison_Exp>;
@@ -315,6 +334,7 @@ export type Posts_Inc_Input = {
 export type Posts_Insert_Input = {
   body?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  embedding?: InputMaybe<Scalars['vector']['input']>;
   hook?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['Int']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
@@ -369,6 +389,7 @@ export type Posts_On_Conflict = {
 export type Posts_Order_By = {
   body?: InputMaybe<Order_By>;
   createdAt?: InputMaybe<Order_By>;
+  embedding?: InputMaybe<Order_By>;
   hook?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   image?: InputMaybe<Order_By>;
@@ -389,6 +410,8 @@ export enum Posts_Select_Column {
   /** column name */
   CreatedAt = 'createdAt',
   /** column name */
+  Embedding = 'embedding',
+  /** column name */
   Hook = 'hook',
   /** column name */
   Id = 'id',
@@ -406,6 +429,7 @@ export enum Posts_Select_Column {
 export type Posts_Set_Input = {
   body?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  embedding?: InputMaybe<Scalars['vector']['input']>;
   hook?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['Int']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
@@ -444,6 +468,7 @@ export type Posts_Stream_Cursor_Input = {
 export type Posts_Stream_Cursor_Value_Input = {
   body?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  embedding?: InputMaybe<Scalars['vector']['input']>;
   hook?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['Int']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
@@ -464,6 +489,8 @@ export enum Posts_Update_Column {
   Body = 'body',
   /** column name */
   CreatedAt = 'createdAt',
+  /** column name */
+  Embedding = 'embedding',
   /** column name */
   Hook = 'hook',
   /** column name */
@@ -778,6 +805,8 @@ export type Projects_Variance_Fields = {
 
 export type Query_Root = {
   __typename?: 'query_root';
+  /** Simple hello action to verify wiring */
+  hello: HelloOutput;
   /** fetch data from the table: "posts" */
   posts: Array<Posts>;
   /** fetch aggregated fields from the table: "posts" */
@@ -790,6 +819,13 @@ export type Query_Root = {
   projects_aggregate: Projects_Aggregate;
   /** fetch data from the table: "projects" using primary key columns */
   projects_by_pk?: Maybe<Projects>;
+  /** Semantic search over posts using vector similarity */
+  searchPosts: Array<SearchResult>;
+};
+
+
+export type Query_RootHelloArgs = {
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -836,6 +872,12 @@ export type Query_RootProjects_AggregateArgs = {
 
 export type Query_RootProjects_By_PkArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type Query_RootSearchPostsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  query: Scalars['String']['input'];
 };
 
 export type Subscription_Root = {
@@ -931,6 +973,19 @@ export type Timestamptz_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
 };
 
+/** Boolean expression to compare columns of type "vector". All fields are combined with logical 'AND'. */
+export type Vector_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['vector']['input']>;
+  _gt?: InputMaybe<Scalars['vector']['input']>;
+  _gte?: InputMaybe<Scalars['vector']['input']>;
+  _in?: InputMaybe<Array<Scalars['vector']['input']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['vector']['input']>;
+  _lte?: InputMaybe<Scalars['vector']['input']>;
+  _neq?: InputMaybe<Scalars['vector']['input']>;
+  _nin?: InputMaybe<Array<Scalars['vector']['input']>>;
+};
+
 export type GetPostBySlugQueryVariables = Exact<{
   slug: Scalars['String']['input'];
 }>;
@@ -947,6 +1002,14 @@ export type GetPostsQueryVariables = Exact<{
 
 
 export type GetPostsQuery = { __typename?: 'query_root', posts: Array<{ __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null }>, posts_aggregate: { __typename?: 'posts_aggregate', aggregate?: { __typename?: 'posts_aggregate_fields', count: number } | null } };
+
+export type SearchPostsQueryVariables = Exact<{
+  query: Scalars['String']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type SearchPostsQuery = { __typename?: 'query_root', searchPosts: Array<{ __typename?: 'SearchResult', id: number, slug: string, title: string, hook?: string | null, similarity: number, createdAt: any }> };
 
 export const PostFieldsFragmentDoc = gql`
     fragment PostFields on posts {
@@ -1056,3 +1119,52 @@ export type GetPostsQueryHookResult = ReturnType<typeof useGetPostsQuery>;
 export type GetPostsLazyQueryHookResult = ReturnType<typeof useGetPostsLazyQuery>;
 export type GetPostsSuspenseQueryHookResult = ReturnType<typeof useGetPostsSuspenseQuery>;
 export type GetPostsQueryResult = Apollo.QueryResult<GetPostsQuery, GetPostsQueryVariables>;
+export const SearchPostsDocument = gql`
+    query SearchPosts($query: String!, $limit: Int) {
+  searchPosts(query: $query, limit: $limit) {
+    id
+    slug
+    title
+    hook
+    similarity
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useSearchPostsQuery__
+ *
+ * To run a query within a React component, call `useSearchPostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchPostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchPostsQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useSearchPostsQuery(baseOptions: Apollo.QueryHookOptions<SearchPostsQuery, SearchPostsQueryVariables> & ({ variables: SearchPostsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchPostsQuery, SearchPostsQueryVariables>(SearchPostsDocument, options);
+      }
+export function useSearchPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchPostsQuery, SearchPostsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchPostsQuery, SearchPostsQueryVariables>(SearchPostsDocument, options);
+        }
+// @ts-ignore
+export function useSearchPostsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SearchPostsQuery, SearchPostsQueryVariables>): Apollo.UseSuspenseQueryResult<SearchPostsQuery, SearchPostsQueryVariables>;
+export function useSearchPostsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SearchPostsQuery, SearchPostsQueryVariables>): Apollo.UseSuspenseQueryResult<SearchPostsQuery | undefined, SearchPostsQueryVariables>;
+export function useSearchPostsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SearchPostsQuery, SearchPostsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SearchPostsQuery, SearchPostsQueryVariables>(SearchPostsDocument, options);
+        }
+export type SearchPostsQueryHookResult = ReturnType<typeof useSearchPostsQuery>;
+export type SearchPostsLazyQueryHookResult = ReturnType<typeof useSearchPostsLazyQuery>;
+export type SearchPostsSuspenseQueryHookResult = ReturnType<typeof useSearchPostsSuspenseQuery>;
+export type SearchPostsQueryResult = Apollo.QueryResult<SearchPostsQuery, SearchPostsQueryVariables>;

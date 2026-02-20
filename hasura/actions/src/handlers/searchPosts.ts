@@ -37,6 +37,7 @@ export async function handleSearchPosts(
       created_at
     FROM posts
     WHERE embedding IS NOT NULL
+      AND 1 - (embedding <=> ${vectorStr}::vector) >= 0.15
     ORDER BY embedding <=> ${vectorStr}::vector
     LIMIT ${limit}
   `;

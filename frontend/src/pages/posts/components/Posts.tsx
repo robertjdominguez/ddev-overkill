@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Title, Text } from '@mantine/core';
 import { motion } from 'motion/react';
 import AllPosts from './AllPosts';
 import AuthorSidebar from './AuthorSidebar';
+import SearchPosts from './SearchPosts';
 import classes from './Posts.module.css';
 
 const container = {
@@ -25,6 +27,8 @@ const item = {
 };
 
 export default function Posts() {
+  const [searching, setSearching] = useState(false);
+
   return (
     <motion.div variants={container} initial="hidden" animate="visible" className={classes.layout}>
       <motion.div variants={item}>
@@ -42,7 +46,10 @@ export default function Posts() {
             portion of a problem you're facing.
           </Text>
         </div>
-        <AllPosts />
+        <SearchPosts onSearchActive={setSearching} />
+        <div style={{ display: searching ? 'none' : undefined }}>
+          <AllPosts />
+        </div>
       </motion.div>
     </motion.div>
   );

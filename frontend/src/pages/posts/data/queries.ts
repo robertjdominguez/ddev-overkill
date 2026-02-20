@@ -24,3 +24,16 @@ export const GET_POSTS = gql`
     }
   }
 `;
+
+export const SEARCH_POSTS = gql`
+  query SearchPosts($query: String!, $limit: Int) {
+    searchPosts(query: $query, limit: $limit) {
+      id
+      slug
+      title
+      hook
+      similarity
+      createdAt
+    }
+  }
+`;
