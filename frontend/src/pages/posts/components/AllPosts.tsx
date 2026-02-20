@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { NetworkStatus } from '@apollo/client';
-import { Card, SimpleGrid, Skeleton } from '@mantine/core';
+import { Skeleton, Stack } from '@mantine/core';
 import { useIntersection } from '@mantine/hooks';
 import { useGetPostsQuery, type PostFieldsFragment } from '@/generated/graphql';
 import Loading from './Loading';
@@ -12,14 +12,13 @@ const PAGE_SIZE = 12;
 
 function PostSkeleton() {
   return (
-    <Card padding="sm" withBorder>
+    <div style={{ padding: 'var(--mantine-spacing-md) 0' }}>
       <Skeleton height={10} width="40%" />
-      <Skeleton height={18} width="80%" mt="xs" />
-      <Skeleton height={18} width="60%" mt={4} />
-      <Skeleton height={12} mt="xs" />
-      <Skeleton height={12} mt={4} />
-      <Skeleton height={12} mt={4} width="70%" />
-    </Card>
+      <Skeleton height={22} width="70%" mt="xs" />
+      <Skeleton height={14} mt="sm" />
+      <Skeleton height={14} mt={4} width="85%" />
+      <Skeleton height={30} width={110} mt="sm" radius="xl" />
+    </div>
   );
 }
 
@@ -54,7 +53,7 @@ export default function AllPosts() {
   if (!data?.posts.length) return <EmptyPosts />;
 
   return (
-    <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+    <Stack gap="lg">
       {data.posts.map((post: PostFieldsFragment) => (
         <PostPreview key={post.id} post={post} />
       ))}
@@ -66,6 +65,6 @@ export default function AllPosts() {
           ))}
         </>
       )}
-    </SimpleGrid>
+    </Stack>
   );
 }

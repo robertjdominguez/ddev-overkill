@@ -1,15 +1,21 @@
-.card {
-  text-decoration: none;
-  color: inherit;
-  transition: background-color 150ms ease;
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-xs);
+  padding: var(--mantine-spacing-md) 0;
+  border-bottom: 1px solid var(--mantine-color-default-border);
+}
 
-  &:hover {
-    background-color: var(--mantine-color-default-hover);
-    color: inherit;
-  }
+.entry:last-child {
+  border-bottom: none;
+}
 
-  &:focus-visible {
-    outline: none;
-    border-color: var(--mantine-primary-color-filled);
-  }
+.arrow {
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 150ms ease;
+}
+
+.readMore:hover .arrow {
+  transform: translateX(3px);
 }

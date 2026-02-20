@@ -1,0 +1,14 @@
+.layout {
+  display: grid;
+  grid-template-columns: 275px 1fr;
+  gap: 80px;
+  max-width: 1200px;
+  padding-top: var(--mantine-spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: var(--mantine-spacing-xl);
+  }
+}
