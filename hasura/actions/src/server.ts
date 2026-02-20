@@ -1,0 +1,53 @@
+import express from "express";
+import cors from "cors";
+import { validateEnv } from "./config/env";
+import { createAppContext } from "./config/context";
+import { handleAction } from "./handlers";
+import { handleGenerateEmbeddings } from "./lib/embeddings";
+import type { HasuraActionRequest } from "./types";
+import type { Request, Response, NextFunction } from "express";
+
+const env = validateEnv();
+const appContext = createAppContext(env);
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+function asyncHandler(
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>,
+) {
+  return (req: Request, res: Response, next: NextFunction) =>
+    Promise.resolve(fn(req, res, next)).catch(next);
+}
+
+app.get("/healthz", (_req: Request, res: Response) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+app.post(
+  "/actions",
+  asyncHandler(async (req: Request, res: Response) => {
+    const actionRequest: HasuraActionRequest = req.body;
+    await handleAction(actionRequest.action.name, actionRequest, res, appContext);
+  }),
+);
+
+app.post(
+  "/generate-embeddings",
+  asyncHandler(async (req: Request, res: Response) => {
+    await handleGenerateEmbeddings(req, res, appContext);
+  }),
+);
+
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({
+    message: err.message || "Internal server error",
+    extensions: { code: "INTERNAL_ERROR" },
+  });
+});
+
+app.listen(env.PORT, () => {
+  console.log(`Actions server running on port ${env.PORT}`);
+});

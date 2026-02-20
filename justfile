@@ -35,3 +35,17 @@ reload-metadata:
 # Tail Hasura logs
 logs:
     docker compose logs -f hasura
+
+# Start the Actions service locally with hot-reload
+actions:
+    cd hasura/actions && bun install && bun --watch src/server.ts
+
+# Tail Actions service logs
+actions-logs:
+    docker compose logs -f actions
+
+# Generate embeddings for all posts
+generate-embeddings:
+    curl -s -X POST http://localhost:3001/generate-embeddings \
+        -H 'Content-Type: application/json' \
+        -H 'x-hasura-admin-secret: myadminsecret' | python3 -m json.tool

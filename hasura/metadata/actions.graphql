@@ -1,0 +1,18 @@
+type Query {
+  hello(name: String): HelloOutput!
+  searchPosts(query: String!, limit: Int): [SearchResult!]!
+}
+
+type HelloOutput {
+  message: String!
+  timestamp: String!
+}
+
+type SearchResult {
+  id: Int!
+  slug: String!
+  title: String!
+  hook: String
+  similarity: Float!
+  createdAt: timestamptz!
+}

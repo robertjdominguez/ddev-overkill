@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg15
     container_name: mysite-postgres
     restart: unless-stopped
     environment:
@@ -30,14 +30,38 @@ services:
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
+      ACTIONS_URL: http://actions:3001/actions
     volumes:
       - ./hasura/migrations:/hasura-migrations
       - ./hasura/metadata:/hasura-metadata
     depends_on:
       postgres:
         condition: service_healthy
+      actions:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  actions:
+    build:
+      context: ./hasura/actions
+    container_name: mysite-actions
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DATABASE_URL: ${HASURA_GRAPHQL_DATABASE_URL:-postgres://postgres:postgrespassword@postgres:5432/mysite}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET:-myadminsecret}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/healthz"]
       interval: 10s
       timeout: 5s
       retries: 5

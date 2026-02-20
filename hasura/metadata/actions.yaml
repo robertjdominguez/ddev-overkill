@@ -1,6 +1,36 @@
-actions: []
+actions:
+  - name: hello
+    definition:
+      kind: synchronous
+      handler: "{{ACTIONS_URL}}"
+      forward_client_headers: false
+      output_type: HelloOutput!
+      arguments:
+        - name: name
+          type: String
+      type: query
+    permissions:
+      - role: public
+    comment: Simple hello action to verify wiring
+  - name: searchPosts
+    definition:
+      kind: synchronous
+      handler: "{{ACTIONS_URL}}"
+      forward_client_headers: false
+      output_type: "[SearchResult!]!"
+      arguments:
+        - name: query
+          type: String!
+        - name: limit
+          type: Int
+      type: query
+    permissions:
+      - role: public
+    comment: Semantic search over posts using vector similarity
 custom_types:
   enums: []
   input_objects: []
-  objects: []
+  objects:
+    - name: HelloOutput
+    - name: SearchResult
   scalars: []
