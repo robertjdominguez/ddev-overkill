@@ -172,6 +172,21 @@ async function uploadImageToMinio(localPath) {
   return rewrittenUrl;
 }
 
+async function rewriteBodyImages(body) {
+  // Match markdown images with local paths: ![alt](/some/path.ext)
+  const imgRegex = /!\[([^\]]*)\]\((\/[^)]+\.(jpg|jpeg|png|gif|webp|svg))\)/gi;
+  const matches = [...body.matchAll(imgRegex)];
+  let result = body;
+  for (const match of matches) {
+    const localPath = match[2];
+    if (isLocalPath(localPath)) {
+      const newUrl = await uploadImageToMinio(localPath);
+      result = result.replace(match[0], `![${match[1]}](${newUrl})`);
+    }
+  }
+  return result;
+}
+
 async function main() {
   console.log('Starting markdown ingestion...');
   console.log(`Posts directory: ${POSTS_DIR}`);
@@ -190,6 +205,7 @@ async function main() {
       if (isLocalPath(post.image)) {
         post.image = await uploadImageToMinio(post.image);
       }
+      post.body = await rewriteBodyImages(post.body);
       await upsertPost(client, post);
       console.log(`✓ Post: ${post.title}`);
     } catch (err) {
