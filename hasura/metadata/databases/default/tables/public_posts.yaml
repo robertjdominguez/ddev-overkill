@@ -7,6 +7,10 @@ configuration:
       custom_name: createdAt
     updated_at:
       custom_name: updatedAt
+    is_published:
+      custom_name: isPublished
+    first_published:
+      custom_name: firstPublished
 computed_fields:
   - name: similarPosts
     definition:
@@ -25,9 +29,13 @@ select_permissions:
         - hook
         - body
         - image
+        - is_published
+        - first_published
         - created_at
         - updated_at
-      filter: {}
+      filter:
+        is_published:
+          _eq: true
       allow_aggregations: true
   - role: site_admin
     permission:
@@ -39,6 +47,8 @@ select_permissions:
         - body
         - image
         - embedding
+        - is_published
+        - first_published
         - created_at
         - updated_at
       filter: {}
@@ -52,6 +62,8 @@ insert_permissions:
         - hook
         - body
         - image
+        - is_published
+        - first_published
       check: {}
       set:
         created_at: "now()"
@@ -65,6 +77,8 @@ update_permissions:
         - hook
         - body
         - image
+        - is_published
+        - first_published
         - updated_at
       filter: {}
       check: {}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { TextInput, Button, Stack, Image, Group } from '@mantine/core';
+import { TextInput, Button, Stack, Image, Group, Badge, Text } from '@mantine/core';
+import { modals } from '@mantine/modals';
 import MDEditor from '@uiw/react-md-editor';
 import { useAuth } from '@/lib/auth';
 
@@ -14,6 +15,10 @@ export interface PostFormValues {
 interface PostFormProps {
   initialValues?: Partial<PostFormValues>;
   onSubmit: (values: PostFormValues) => void;
+  onPublish?: (values: PostFormValues) => void;
+  onUnpublish?: () => void;
+  isPublished?: boolean;
+  firstPublished?: string | null;
   loading?: boolean;
   submitLabel?: string;
 }
@@ -25,7 +30,16 @@ function slugify(text: string): string {
     .replace(/(^-|-$)+/g, '');
 }
 
-export default function PostForm({ initialValues, onSubmit, loading, submitLabel = 'Save' }: PostFormProps) {
+export default function PostForm({
+  initialValues,
+  onSubmit,
+  onPublish,
+  onUnpublish,
+  isPublished,
+  firstPublished,
+  loading,
+  submitLabel = 'Save',
+}: PostFormProps) {
   const { token } = useAuth();
   const [title, setTitle] = useState(initialValues?.title ?? '');
   const [slug, setSlug] = useState(initialValues?.slug ?? '');
@@ -63,14 +77,42 @@ export default function PostForm({ initialValues, onSubmit, loading, submitLabel
     }
   };
 
+  const getValues = (): PostFormValues => ({ slug, title, hook, body, image });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ slug, title, hook, body, image });
+    onSubmit(getValues());
+  };
+
+  const handlePublish = () => {
+    onPublish?.(getValues());
+  };
+
+  const handleUnpublish = () => {
+    modals.openConfirmModal({
+      title: 'Unpublish post',
+      children: 'This post will no longer be visible to the public. You can re-publish it later.',
+      labels: { confirm: 'Unpublish', cancel: 'Cancel' },
+      confirmProps: { color: 'yellow' },
+      onConfirm: () => onUnpublish?.(),
+    });
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <Stack>
+        {isPublished !== undefined && (
+          <Group>
+            <Badge color={isPublished ? 'green' : 'gray'} variant="filled" size="lg">
+              {isPublished ? 'Published' : 'Draft'}
+            </Badge>
+            {firstPublished && (
+              <Text size="sm" c="dimmed">
+                First published {new Date(firstPublished).toLocaleDateString()}
+              </Text>
+            )}
+          </Group>
+        )}
         <TextInput
           label="Title"
           value={title}
@@ -131,9 +173,21 @@ export default function PostForm({ initialValues, onSubmit, loading, submitLabel
             height={400}
           />
         </div>
-        <Button type="submit" loading={loading}>
-          {submitLabel}
-        </Button>
+        <Group>
+          <Button type="submit" loading={loading}>
+            {submitLabel}
+          </Button>
+          {onPublish && !isPublished && (
+            <Button color="green" onClick={handlePublish} loading={loading}>
+              Publish
+            </Button>
+          )}
+          {onUnpublish && isPublished && (
+            <Button variant="light" color="yellow" onClick={handleUnpublish} loading={loading}>
+              Unpublish
+            </Button>
+          )}
+        </Group>
       </Stack>
     </form>
   );

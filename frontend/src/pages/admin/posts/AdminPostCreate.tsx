@@ -24,7 +24,7 @@ export default function AdminPostCreate() {
   return (
     <>
       <Title order={2} mb="md">New Post</Title>
-      <PostForm onSubmit={handleSubmit} loading={loading} submitLabel="Create Post" />
+      <PostForm onSubmit={handleSubmit} loading={loading} submitLabel="Create Draft" />
     </>
   );
 }

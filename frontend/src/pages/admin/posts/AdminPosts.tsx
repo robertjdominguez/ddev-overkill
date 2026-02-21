@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
-import { Table, Button, Group, Title, ActionIcon, Loader, Alert } from '@mantine/core';
+import { Table, Button, Group, Title, ActionIcon, Loader, Alert, Badge } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
@@ -41,6 +41,7 @@ export default function AdminPosts() {
           <Table.Tr>
             <Table.Th>Title</Table.Th>
             <Table.Th>Slug</Table.Th>
+            <Table.Th>Status</Table.Th>
             <Table.Th>Created</Table.Th>
             <Table.Th w={100}>Actions</Table.Th>
           </Table.Tr>
@@ -50,6 +51,11 @@ export default function AdminPosts() {
             <Table.Tr key={post.id}>
               <Table.Td>{post.title}</Table.Td>
               <Table.Td>{post.slug}</Table.Td>
+              <Table.Td>
+                <Badge color={post.isPublished ? 'green' : 'gray'} variant="filled" radius={'sm'} size="sm">
+                  {post.isPublished ? 'Published' : 'Draft'}
+                </Badge>
+              </Table.Td>
               <Table.Td>{new Date(post.createdAt).toLocaleDateString()}</Table.Td>
               <Table.Td>
                 <Group gap="xs">

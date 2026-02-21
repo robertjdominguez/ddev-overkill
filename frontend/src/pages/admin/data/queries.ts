@@ -8,6 +8,8 @@ export const GET_ADMIN_POSTS = gql`
       title
       hook
       image
+      isPublished
+      firstPublished
       createdAt
       updatedAt
     }
@@ -23,6 +25,8 @@ export const GET_POST_FOR_EDIT = gql`
       hook
       body
       image
+      isPublished
+      firstPublished
       createdAt
       updatedAt
     }
@@ -43,6 +47,30 @@ export const UPDATE_POST = gql`
     update_posts_by_pk(pk_columns: { id: $id }, _set: { slug: $slug, title: $title, hook: $hook, body: $body, image: $image }) {
       id
       slug
+      isPublished
+      firstPublished
+      updatedAt
+    }
+  }
+`;
+
+export const PUBLISH_POST = gql`
+  mutation PublishPost($id: Int!, $slug: String!, $title: String!, $hook: String, $body: String, $image: String, $firstPublished: timestamptz!) {
+    update_posts_by_pk(pk_columns: { id: $id }, _set: { slug: $slug, title: $title, hook: $hook, body: $body, image: $image, isPublished: true, firstPublished: $firstPublished }) {
+      id
+      slug
+      isPublished
+      firstPublished
+      updatedAt
+    }
+  }
+`;
+
+export const UNPUBLISH_POST = gql`
+  mutation UnpublishPost($id: Int!) {
+    update_posts_by_pk(pk_columns: { id: $id }, _set: { isPublished: false }) {
+      id
+      isPublished
       updatedAt
     }
   }

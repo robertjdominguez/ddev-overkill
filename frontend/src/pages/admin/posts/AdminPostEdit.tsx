@@ -3,7 +3,7 @@ import { useQuery, useMutation } from '@apollo/client';
 import { Title, Loader, Alert } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import PostForm, { type PostFormValues } from './components/PostForm';
-import { GET_POST_FOR_EDIT, UPDATE_POST } from '../data/queries';
+import { GET_POST_FOR_EDIT, UPDATE_POST, PUBLISH_POST, UNPUBLISH_POST } from '../data/queries';
 
 export default function AdminPostEdit() {
   const { id } = useParams<{ id: string }>();
@@ -13,9 +13,27 @@ export default function AdminPostEdit() {
     variables: { id: postId },
   });
 
-  const [updatePost, { loading: mutationLoading }] = useMutation(UPDATE_POST, {
+  const [updatePost, { loading: updateLoading }] = useMutation(UPDATE_POST, {
     onCompleted: () => {
-      notifications.show({ message: 'Post updated', color: 'green' });
+      notifications.show({ message: 'Post saved', color: 'green' });
+    },
+    onError: (err) => {
+      notifications.show({ message: err.message, color: 'red' });
+    },
+  });
+
+  const [publishPost, { loading: publishLoading }] = useMutation(PUBLISH_POST, {
+    onCompleted: () => {
+      notifications.show({ message: 'Post published', color: 'green' });
+    },
+    onError: (err) => {
+      notifications.show({ message: err.message, color: 'red' });
+    },
+  });
+
+  const [unpublishPost, { loading: unpublishLoading }] = useMutation(UNPUBLISH_POST, {
+    onCompleted: () => {
+      notifications.show({ message: 'Post unpublished', color: 'yellow' });
     },
     onError: (err) => {
       notifications.show({ message: err.message, color: 'red' });
@@ -28,8 +46,24 @@ export default function AdminPostEdit() {
   const post = data?.posts_by_pk;
   if (!post) return <Alert color="red">Post not found</Alert>;
 
+  const mutationLoading = updateLoading || publishLoading || unpublishLoading;
+
   const handleSubmit = (values: PostFormValues) => {
     updatePost({ variables: { id: postId, ...values } });
+  };
+
+  const handlePublish = (values: PostFormValues) => {
+    publishPost({
+      variables: {
+        id: postId,
+        ...values,
+        firstPublished: post.firstPublished ?? new Date().toISOString(),
+      },
+    });
+  };
+
+  const handleUnpublish = () => {
+    unpublishPost({ variables: { id: postId } });
   };
 
   return (
@@ -44,8 +78,12 @@ export default function AdminPostEdit() {
           image: post.image ?? '',
         }}
         onSubmit={handleSubmit}
+        onPublish={handlePublish}
+        onUnpublish={handleUnpublish}
+        isPublished={post.isPublished}
+        firstPublished={post.firstPublished}
         loading={mutationLoading}
-        submitLabel="Update Post"
+        submitLabel={post.isPublished ? 'Save' : 'Save Draft'}
       />
     </>
   );
