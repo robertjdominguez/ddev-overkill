@@ -1,0 +1,32 @@
+{$DOMAIN:localhost} {
+    # GraphQL + Hasura API (path passes through unchanged)
+    handle /v1/* {
+        reverse_proxy hasura:8080
+    }
+
+    # Hasura console
+    handle /console/* {
+        reverse_proxy hasura:8080
+    }
+
+    # Object storage (strip /storage prefix, proxy to MinIO)
+    handle_path /storage/* {
+        reverse_proxy minio:9000
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # Health check
+    handle /health {
+        respond "healthy" 200
+    }
+
+    # Frontend SPA
+    handle {
+        root * /srv
+        try_files {path} /index.html
+        file_server
+
+        @static path *.js *.css *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2
+        header @static Cache-Control "public, max-age=31536000, immutable"
+    }
+}
