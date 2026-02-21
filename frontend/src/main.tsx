@@ -1,12 +1,16 @@
 import { ApolloProvider } from '@apollo/client';
 import { MantineProvider, createTheme } from '@mantine/core';
+import { ModalsProvider } from '@mantine/modals';
+import { Notifications } from '@mantine/notifications';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import './index.css';
 import { router } from './router';
 import client from './lib/apollo';
+import { AuthProvider } from './lib/auth';
 
 const theme = createTheme({
   primaryColor: 'accent',
@@ -50,9 +54,14 @@ const theme = createTheme({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MantineProvider theme={theme} forceColorScheme="dark">
-      <ApolloProvider client={client}>
-        <RouterProvider router={router} />
-      </ApolloProvider>
+      <AuthProvider>
+        <ApolloProvider client={client}>
+          <ModalsProvider>
+            <Notifications />
+            <RouterProvider router={router} />
+          </ModalsProvider>
+        </ApolloProvider>
+      </AuthProvider>
     </MantineProvider>
   </StrictMode>,
 );

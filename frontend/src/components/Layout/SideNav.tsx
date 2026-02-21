@@ -1,6 +1,7 @@
 import { Drawer, Stack, Group, Anchor } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import { FiHome, FiFileText } from 'react-icons/fi';
+import { FiHome, FiFileText, FiSettings } from 'react-icons/fi';
+import { useAuth } from '@/lib/auth';
 
 interface SideNavProps {
   opened: boolean;
@@ -8,6 +9,8 @@ interface SideNavProps {
 }
 
 export default function SideNav({ opened, onClose }: SideNavProps) {
+  const { isAuthenticated } = useAuth();
+
   return (
     <Drawer
       opened={opened}
@@ -29,6 +32,14 @@ export default function SideNav({ opened, onClose }: SideNavProps) {
             Posts
           </Group>
         </Anchor>
+        {isAuthenticated && (
+          <Anchor component={Link} to="/admin" onClick={onClose}>
+            <Group gap="xs">
+              <FiSettings size={20} />
+              Admin
+            </Group>
+          </Anchor>
+        )}
       </Stack>
     </Drawer>
   );

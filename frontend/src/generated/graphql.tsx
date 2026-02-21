@@ -38,6 +38,12 @@ export type Int_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['Int']['input']>>;
 };
 
+export type LoginOutput = {
+  __typename?: 'LoginOutput';
+  expiresAt: Scalars['String']['output'];
+  token: Scalars['String']['output'];
+};
+
 export type SearchResult = {
   __typename?: 'SearchResult';
   createdAt: Scalars['timestamptz']['output'];
@@ -109,6 +115,8 @@ export enum Cursor_Ordering {
 /** mutation root */
 export type Mutation_Root = {
   __typename?: 'mutation_root';
+  /** Admin login - returns JWT token */
+  adminLogin: LoginOutput;
   /** delete data from the table: "posts" */
   delete_posts?: Maybe<Posts_Mutation_Response>;
   /** delete single row from the table: "posts" */
@@ -137,6 +145,13 @@ export type Mutation_Root = {
   update_projects_by_pk?: Maybe<Projects>;
   /** update multiples rows of table: "projects" */
   update_projects_many?: Maybe<Array<Maybe<Projects_Mutation_Response>>>;
+};
+
+
+/** mutation root */
+export type Mutation_RootAdminLoginArgs = {
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
 };
 
 
@@ -1003,6 +1018,56 @@ export type Vector_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['vector']['input']>>;
 };
 
+export type AdminLoginMutationVariables = Exact<{
+  username: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+}>;
+
+
+export type AdminLoginMutation = { __typename?: 'mutation_root', adminLogin: { __typename?: 'LoginOutput', token: string, expiresAt: string } };
+
+export type GetAdminPostsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAdminPostsQuery = { __typename?: 'query_root', posts: Array<{ __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, image?: string | null, createdAt?: any | null, updatedAt?: any | null }> };
+
+export type GetPostForEditQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type GetPostForEditQuery = { __typename?: 'query_root', posts_by_pk?: { __typename?: 'posts', id: number, slug: string, title: string, hook?: string | null, body?: string | null, image?: string | null, createdAt?: any | null, updatedAt?: any | null } | null };
+
+export type InsertPostMutationVariables = Exact<{
+  slug: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  hook?: InputMaybe<Scalars['String']['input']>;
+  body?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type InsertPostMutation = { __typename?: 'mutation_root', insert_posts_one?: { __typename?: 'posts', id: number, slug: string } | null };
+
+export type UpdatePostMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+  slug: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  hook?: InputMaybe<Scalars['String']['input']>;
+  body?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdatePostMutation = { __typename?: 'mutation_root', update_posts_by_pk?: { __typename?: 'posts', id: number, slug: string, updatedAt?: any | null } | null };
+
+export type DeletePostMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeletePostMutation = { __typename?: 'mutation_root', delete_posts_by_pk?: { __typename?: 'posts', id: number } | null };
+
 export type GetPostBySlugQueryVariables = Exact<{
   slug: Scalars['String']['input'];
 }>;
@@ -1038,6 +1103,255 @@ export const PostFieldsFragmentDoc = gql`
   createdAt
 }
     `;
+export const AdminLoginDocument = gql`
+    mutation AdminLogin($username: String!, $password: String!) {
+  adminLogin(username: $username, password: $password) {
+    token
+    expiresAt
+  }
+}
+    `;
+export type AdminLoginMutationFn = Apollo.MutationFunction<AdminLoginMutation, AdminLoginMutationVariables>;
+
+/**
+ * __useAdminLoginMutation__
+ *
+ * To run a mutation, you first call `useAdminLoginMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAdminLoginMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [adminLoginMutation, { data, loading, error }] = useAdminLoginMutation({
+ *   variables: {
+ *      username: // value for 'username'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useAdminLoginMutation(baseOptions?: Apollo.MutationHookOptions<AdminLoginMutation, AdminLoginMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AdminLoginMutation, AdminLoginMutationVariables>(AdminLoginDocument, options);
+      }
+export type AdminLoginMutationHookResult = ReturnType<typeof useAdminLoginMutation>;
+export type AdminLoginMutationResult = Apollo.MutationResult<AdminLoginMutation>;
+export type AdminLoginMutationOptions = Apollo.BaseMutationOptions<AdminLoginMutation, AdminLoginMutationVariables>;
+export const GetAdminPostsDocument = gql`
+    query GetAdminPosts {
+  posts(order_by: {createdAt: desc}) {
+    id
+    slug
+    title
+    hook
+    image
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetAdminPostsQuery__
+ *
+ * To run a query within a React component, call `useGetAdminPostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAdminPostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAdminPostsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAdminPostsQuery(baseOptions?: Apollo.QueryHookOptions<GetAdminPostsQuery, GetAdminPostsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAdminPostsQuery, GetAdminPostsQueryVariables>(GetAdminPostsDocument, options);
+      }
+export function useGetAdminPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAdminPostsQuery, GetAdminPostsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAdminPostsQuery, GetAdminPostsQueryVariables>(GetAdminPostsDocument, options);
+        }
+// @ts-ignore
+export function useGetAdminPostsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetAdminPostsQuery, GetAdminPostsQueryVariables>): Apollo.UseSuspenseQueryResult<GetAdminPostsQuery, GetAdminPostsQueryVariables>;
+export function useGetAdminPostsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAdminPostsQuery, GetAdminPostsQueryVariables>): Apollo.UseSuspenseQueryResult<GetAdminPostsQuery | undefined, GetAdminPostsQueryVariables>;
+export function useGetAdminPostsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAdminPostsQuery, GetAdminPostsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAdminPostsQuery, GetAdminPostsQueryVariables>(GetAdminPostsDocument, options);
+        }
+export type GetAdminPostsQueryHookResult = ReturnType<typeof useGetAdminPostsQuery>;
+export type GetAdminPostsLazyQueryHookResult = ReturnType<typeof useGetAdminPostsLazyQuery>;
+export type GetAdminPostsSuspenseQueryHookResult = ReturnType<typeof useGetAdminPostsSuspenseQuery>;
+export type GetAdminPostsQueryResult = Apollo.QueryResult<GetAdminPostsQuery, GetAdminPostsQueryVariables>;
+export const GetPostForEditDocument = gql`
+    query GetPostForEdit($id: Int!) {
+  posts_by_pk(id: $id) {
+    id
+    slug
+    title
+    hook
+    body
+    image
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetPostForEditQuery__
+ *
+ * To run a query within a React component, call `useGetPostForEditQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPostForEditQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPostForEditQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetPostForEditQuery(baseOptions: Apollo.QueryHookOptions<GetPostForEditQuery, GetPostForEditQueryVariables> & ({ variables: GetPostForEditQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPostForEditQuery, GetPostForEditQueryVariables>(GetPostForEditDocument, options);
+      }
+export function useGetPostForEditLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPostForEditQuery, GetPostForEditQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPostForEditQuery, GetPostForEditQueryVariables>(GetPostForEditDocument, options);
+        }
+// @ts-ignore
+export function useGetPostForEditSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetPostForEditQuery, GetPostForEditQueryVariables>): Apollo.UseSuspenseQueryResult<GetPostForEditQuery, GetPostForEditQueryVariables>;
+export function useGetPostForEditSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPostForEditQuery, GetPostForEditQueryVariables>): Apollo.UseSuspenseQueryResult<GetPostForEditQuery | undefined, GetPostForEditQueryVariables>;
+export function useGetPostForEditSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPostForEditQuery, GetPostForEditQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPostForEditQuery, GetPostForEditQueryVariables>(GetPostForEditDocument, options);
+        }
+export type GetPostForEditQueryHookResult = ReturnType<typeof useGetPostForEditQuery>;
+export type GetPostForEditLazyQueryHookResult = ReturnType<typeof useGetPostForEditLazyQuery>;
+export type GetPostForEditSuspenseQueryHookResult = ReturnType<typeof useGetPostForEditSuspenseQuery>;
+export type GetPostForEditQueryResult = Apollo.QueryResult<GetPostForEditQuery, GetPostForEditQueryVariables>;
+export const InsertPostDocument = gql`
+    mutation InsertPost($slug: String!, $title: String!, $hook: String, $body: String, $image: String) {
+  insert_posts_one(
+    object: {slug: $slug, title: $title, hook: $hook, body: $body, image: $image}
+  ) {
+    id
+    slug
+  }
+}
+    `;
+export type InsertPostMutationFn = Apollo.MutationFunction<InsertPostMutation, InsertPostMutationVariables>;
+
+/**
+ * __useInsertPostMutation__
+ *
+ * To run a mutation, you first call `useInsertPostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInsertPostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [insertPostMutation, { data, loading, error }] = useInsertPostMutation({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *      title: // value for 'title'
+ *      hook: // value for 'hook'
+ *      body: // value for 'body'
+ *      image: // value for 'image'
+ *   },
+ * });
+ */
+export function useInsertPostMutation(baseOptions?: Apollo.MutationHookOptions<InsertPostMutation, InsertPostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<InsertPostMutation, InsertPostMutationVariables>(InsertPostDocument, options);
+      }
+export type InsertPostMutationHookResult = ReturnType<typeof useInsertPostMutation>;
+export type InsertPostMutationResult = Apollo.MutationResult<InsertPostMutation>;
+export type InsertPostMutationOptions = Apollo.BaseMutationOptions<InsertPostMutation, InsertPostMutationVariables>;
+export const UpdatePostDocument = gql`
+    mutation UpdatePost($id: Int!, $slug: String!, $title: String!, $hook: String, $body: String, $image: String) {
+  update_posts_by_pk(
+    pk_columns: {id: $id}
+    _set: {slug: $slug, title: $title, hook: $hook, body: $body, image: $image}
+  ) {
+    id
+    slug
+    updatedAt
+  }
+}
+    `;
+export type UpdatePostMutationFn = Apollo.MutationFunction<UpdatePostMutation, UpdatePostMutationVariables>;
+
+/**
+ * __useUpdatePostMutation__
+ *
+ * To run a mutation, you first call `useUpdatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updatePostMutation, { data, loading, error }] = useUpdatePostMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      slug: // value for 'slug'
+ *      title: // value for 'title'
+ *      hook: // value for 'hook'
+ *      body: // value for 'body'
+ *      image: // value for 'image'
+ *   },
+ * });
+ */
+export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<UpdatePostMutation, UpdatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdatePostMutation, UpdatePostMutationVariables>(UpdatePostDocument, options);
+      }
+export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
+export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
+export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
+export const DeletePostDocument = gql`
+    mutation DeletePost($id: Int!) {
+  delete_posts_by_pk(id: $id) {
+    id
+  }
+}
+    `;
+export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, DeletePostMutationVariables>;
+
+/**
+ * __useDeletePostMutation__
+ *
+ * To run a mutation, you first call `useDeletePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeletePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deletePostMutation, { data, loading, error }] = useDeletePostMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeletePostMutation(baseOptions?: Apollo.MutationHookOptions<DeletePostMutation, DeletePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, options);
+      }
+export type DeletePostMutationHookResult = ReturnType<typeof useDeletePostMutation>;
+export type DeletePostMutationResult = Apollo.MutationResult<DeletePostMutation>;
+export type DeletePostMutationOptions = Apollo.BaseMutationOptions<DeletePostMutation, DeletePostMutationVariables>;
 export const GetPostBySlugDocument = gql`
     query GetPostBySlug($slug: String!) {
   posts(where: {slug: {_eq: $slug}}, limit: 1) {

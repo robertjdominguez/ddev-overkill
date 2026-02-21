@@ -18,3 +18,15 @@ select_permissions:
         - tech_stack
         - created_at
       filter: {}
+  - role: site_admin
+    permission:
+      columns:
+        - id
+        - slug
+        - title
+        - description
+        - url
+        - image
+        - tech_stack
+        - created_at
+      filter: {}

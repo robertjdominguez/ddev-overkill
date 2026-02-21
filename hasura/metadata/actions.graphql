@@ -3,6 +3,10 @@ type Query {
   searchPosts(query: String!, limit: Int): [SearchResult!]!
 }
 
+type Mutation {
+  adminLogin(username: String!, password: String!): LoginOutput!
+}
+
 type HelloOutput {
   message: String!
   timestamp: String!
@@ -15,4 +19,9 @@ type SearchResult {
   hook: String
   similarity: Float!
   createdAt: timestamptz!
+}
+
+type LoginOutput {
+  token: String!
+  expiresAt: String!
 }

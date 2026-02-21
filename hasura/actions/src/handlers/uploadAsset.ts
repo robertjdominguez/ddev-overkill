@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
 import type { AppContext } from "../config/context";
 import { uploadFile } from "../lib/storage";
@@ -13,13 +14,37 @@ const ALLOWED_TYPES: Record<string, string> = {
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
+function isAuthorized(req: Request, context: AppContext): boolean {
+  // Admin secret auth (seed script, etc.)
+  const adminSecret = req.headers["x-hasura-admin-secret"];
+  if (adminSecret === context.env.HASURA_GRAPHQL_ADMIN_SECRET) {
+    return true;
+  }
+
+  // JWT Bearer auth
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    try {
+      const token = authHeader.slice(7);
+      const decoded = jwt.verify(token, context.env.HASURA_GRAPHQL_JWT_KEY, {
+        algorithms: ["HS256"],
+      }) as Record<string, any>;
+      const claims = decoded["https://hasura.io/jwt/claims"];
+      return claims?.["x-hasura-default-role"] === "site_admin";
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
+}
+
 export async function handleUploadAsset(
   req: Request,
   res: Response,
   context: AppContext,
 ) {
-  const adminSecret = req.headers["x-hasura-admin-secret"];
-  if (adminSecret !== context.env.HASURA_GRAPHQL_ADMIN_SECRET) {
+  if (!isAuthorized(req, context)) {
     return res.status(401).json({
       message: "Unauthorized",
       extensions: { code: "UNAUTHORIZED" },

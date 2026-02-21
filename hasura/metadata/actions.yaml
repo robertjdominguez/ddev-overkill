@@ -27,10 +27,26 @@ actions:
     permissions:
       - role: public
     comment: Semantic search over posts using vector similarity
+  - name: adminLogin
+    definition:
+      kind: synchronous
+      handler: "{{ACTIONS_URL}}"
+      forward_client_headers: false
+      output_type: LoginOutput!
+      arguments:
+        - name: username
+          type: String!
+        - name: password
+          type: String!
+      type: mutation
+    permissions:
+      - role: public
+    comment: Admin login - returns JWT token
 custom_types:
   enums: []
   input_objects: []
   objects:
     - name: HelloOutput
     - name: SearchResult
+    - name: LoginOutput
   scalars: []

@@ -29,3 +29,48 @@ select_permissions:
         - updated_at
       filter: {}
       allow_aggregations: true
+  - role: site_admin
+    permission:
+      columns:
+        - id
+        - slug
+        - title
+        - hook
+        - body
+        - image
+        - embedding
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+insert_permissions:
+  - role: site_admin
+    permission:
+      columns:
+        - slug
+        - title
+        - hook
+        - body
+        - image
+      check: {}
+      set:
+        created_at: "now()"
+        updated_at: "now()"
+update_permissions:
+  - role: site_admin
+    permission:
+      columns:
+        - slug
+        - title
+        - hook
+        - body
+        - image
+        - updated_at
+      filter: {}
+      check: {}
+      set:
+        updated_at: "now()"
+delete_permissions:
+  - role: site_admin
+    permission:
+      filter: {}

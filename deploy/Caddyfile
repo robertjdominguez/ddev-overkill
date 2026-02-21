@@ -15,6 +15,11 @@
         header Cache-Control "public, max-age=31536000, immutable"
     }
 
+    # Actions API (strip /api prefix, proxy to actions server)
+    handle_path /api/* {
+        reverse_proxy actions:3001
+    }
+
     # Health check
     handle /health {
         respond "healthy" 200

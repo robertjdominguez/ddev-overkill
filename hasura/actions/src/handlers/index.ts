@@ -3,6 +3,7 @@ import type { AppContext } from "../config/context";
 import type { Response } from "express";
 import { handleHello } from "./hello";
 import { handleSearchPosts } from "./searchPosts";
+import { handleAdminLogin } from "./adminLogin";
 
 type ActionHandler = (
   request: HasuraActionRequest,
@@ -13,6 +14,7 @@ type ActionHandler = (
 const actionHandlers: Record<string, ActionHandler> = {
   hello: handleHello,
   searchPosts: handleSearchPosts,
+  adminLogin: handleAdminLogin,
 };
 
 export async function handleAction(

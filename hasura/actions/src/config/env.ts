@@ -9,6 +9,9 @@ const envSchema = z.object({
   MINIO_ACCESS_KEY: z.string().default("minioadmin"),
   MINIO_SECRET_KEY: z.string().default("minioadmin"),
   MINIO_BUCKET: z.string().default("assets"),
+  HASURA_GRAPHQL_JWT_KEY: z.string().min(1),
+  ADMIN_USERNAME: z.string().default("admin"),
+  ADMIN_PASSWORD_HASH: z.string().min(1),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

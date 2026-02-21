@@ -85,6 +85,9 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKET: ${MINIO_BUCKET:-assets}
+      HASURA_GRAPHQL_JWT_KEY: ${HASURA_GRAPHQL_JWT_KEY}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
     depends_on:
       postgres:
         condition: service_healthy
