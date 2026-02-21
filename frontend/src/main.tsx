@@ -49,7 +49,7 @@ const theme = createTheme({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <MantineProvider theme={theme} defaultColorScheme="dark">
+    <MantineProvider theme={theme} forceColorScheme="dark">
       <ApolloProvider client={client}>
         <RouterProvider router={router} />
       </ApolloProvider>

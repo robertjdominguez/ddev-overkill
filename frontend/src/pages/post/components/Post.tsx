@@ -55,7 +55,7 @@ export default function Post() {
                 font: 'inherit',
                 fontFamily: 'inherit',
                 fontSize: '15px',
-                color: 'light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-3))',
+                color: 'var(--mantine-color-gray-3)',
               }}
             />
           )}

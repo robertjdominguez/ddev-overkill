@@ -28,3 +28,23 @@
   border-radius: 50%;
   filter: grayscale(100%);
 }
+
+.shaka {
+  display: inline-block;
+  margin-left: 4px;
+  transform-origin: 70% 80%;
+}
+
+@keyframes hangTen {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(20deg); }
+  40% { transform: rotate(-15deg); }
+  60% { transform: rotate(12deg); }
+  80% { transform: rotate(-8deg); }
+  100% { transform: rotate(0deg); }
+}
+
+:global(button):hover .shaka,
+:global(a):hover .shaka {
+  animation: hangTen 0.6s ease-in-out;
+}

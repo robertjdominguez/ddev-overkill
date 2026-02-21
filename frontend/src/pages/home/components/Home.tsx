@@ -39,9 +39,9 @@ export default function Home() {
           </Text>
           .
         </Text>
-        <Group>
-          <Button component={Link} to="/posts" size="md">
-            🤙 What I'm writing...
+        <Group justify="flex-end">
+          <Button component={Link} to="/posts" variant="light" radius="sm" size="sm">
+            What I'm writing <span className={classes.shaka}>🤙</span>
           </Button>
         </Group>
       </motion.div>

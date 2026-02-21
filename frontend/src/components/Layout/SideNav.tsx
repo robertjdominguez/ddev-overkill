@@ -1,6 +1,6 @@
-import { Drawer, Stack, Group, Anchor, ActionIcon, useMantineColorScheme } from '@mantine/core';
+import { Drawer, Stack, Group, Anchor } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import { FiHome, FiFileText, FiSun, FiMoon } from 'react-icons/fi';
+import { FiHome, FiFileText } from 'react-icons/fi';
 
 interface SideNavProps {
   opened: boolean;
@@ -8,8 +8,6 @@ interface SideNavProps {
 }
 
 export default function SideNav({ opened, onClose }: SideNavProps) {
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-
   return (
     <Drawer
       opened={opened}
@@ -31,13 +29,6 @@ export default function SideNav({ opened, onClose }: SideNavProps) {
             Posts
           </Group>
         </Anchor>
-        <ActionIcon
-          variant="subtle"
-          onClick={toggleColorScheme}
-          aria-label="Toggle color scheme"
-        >
-          {colorScheme === 'dark' ? <FiSun size={20} /> : <FiMoon size={20} />}
-        </ActionIcon>
       </Stack>
     </Drawer>
   );

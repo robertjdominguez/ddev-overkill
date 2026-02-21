@@ -13,7 +13,7 @@ function ResultSkeleton() {
       <Skeleton height={22} width="70%" mt="xs" />
       <Skeleton height={14} mt="sm" />
       <Skeleton height={14} mt={4} width="85%" />
-      <Skeleton height={30} width={110} mt="sm" radius="xl" />
+      <Skeleton height={30} width={110} mt="sm" radius="sm" style={{ marginLeft: 'auto' }} />
     </div>
   );
 }
