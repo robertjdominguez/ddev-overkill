@@ -1,0 +1,39 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: root
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /opt/ddev-overkill
+            git pull
+            docker compose --env-file .env -f deploy/docker-compose.yml up -d --build
+
+      - name: Health check
+        run: |
+          sleep 10
+          for i in $(seq 1 12); do
+            status=$(curl -s -o /dev/null -w '%{http_code}' https://dominguezdev.com/health || true)
+            if [ "$status" = "200" ]; then
+              echo "Health check passed"
+              exit 0
+            fi
+            echo "Attempt $i: status=$status, retrying in 10s..."
+            sleep 10
+          done
+          echo "Health check failed after 2 minutes"
+          exit 1
