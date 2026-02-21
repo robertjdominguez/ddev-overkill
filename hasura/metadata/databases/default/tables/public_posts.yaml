@@ -88,3 +88,23 @@ delete_permissions:
   - role: site_admin
     permission:
       filter: {}
+event_triggers:
+  - name: generate_post_embedding
+    definition:
+      enable_manual: true
+      insert:
+        columns: "*"
+      update:
+        columns:
+          - is_published
+          - title
+          - hook
+          - body
+    retry_conf:
+      num_retries: 3
+      interval_sec: 10
+      timeout_sec: 60
+    webhook: http://actions:3001/generate-post-embedding
+    headers:
+      - name: x-hasura-admin-secret
+        value_from_env: ACTIONS_WEBHOOK_SECRET

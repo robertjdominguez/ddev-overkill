@@ -68,6 +68,7 @@ services:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
       ACTIONS_URL: http://actions:3001/actions
+      ACTIONS_WEBHOOK_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET:-myadminsecret}
     volumes:
       - ./hasura/migrations:/hasura-migrations
       - ./hasura/metadata:/hasura-metadata

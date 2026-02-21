@@ -4,6 +4,7 @@ import { validateEnv } from "./config/env";
 import { createAppContext } from "./config/context";
 import { handleAction } from "./handlers";
 import { handleGenerateEmbeddings } from "./lib/embeddings";
+import { handleGeneratePostEmbedding } from "./handlers/generatePostEmbedding";
 import { handleUploadAsset } from "./handlers/uploadAsset";
 import type { HasuraActionRequest } from "./types";
 import type { Request, Response, NextFunction } from "express";
@@ -38,6 +39,13 @@ app.post(
   "/generate-embeddings",
   asyncHandler(async (req: Request, res: Response) => {
     await handleGenerateEmbeddings(req, res, appContext);
+  }),
+);
+
+app.post(
+  "/generate-post-embedding",
+  asyncHandler(async (req: Request, res: Response) => {
+    await handleGeneratePostEmbedding(req, res, appContext);
   }),
 );
 
