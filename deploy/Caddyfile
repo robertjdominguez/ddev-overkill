@@ -1,4 +1,4 @@
-{$DOMAIN:localhost} {
+{$DOMAIN:localhost}, www.{$DOMAIN:localhost} {
     # GraphQL + Hasura API (path passes through unchanged)
     handle /v1/* {
         reverse_proxy hasura:8080
