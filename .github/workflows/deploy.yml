@@ -9,7 +9,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Log into GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend
+          target: builder
+          build-args: VITE_HASURA_GRAPHQL_URL=/v1/graphql
+          push: true
+          tags: ghcr.io/robertjdominguez/ddev-overkill/frontend:latest
+
   deploy:
+    needs: build-frontend
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -21,6 +46,8 @@ jobs:
           script: |
             cd /opt/ddev-overkill
             git pull
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker compose --env-file .env -f deploy/docker-compose.yml pull frontend
             docker compose --env-file .env -f deploy/docker-compose.yml up -d --build
 
       - name: Health check

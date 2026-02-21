@@ -120,11 +120,7 @@ services:
         condition: service_completed_successfully
 
   frontend:
-    build:
-      context: ../frontend
-      target: builder
-      args:
-        VITE_HASURA_GRAPHQL_URL: /v1/graphql
+    image: ghcr.io/robertjdominguez/ddev-overkill/frontend:latest
     volumes:
       - frontend_build:/output
     entrypoint: ["sh", "-c", "rm -rf /output/* && cp -r /app/dist/* /output/"]
