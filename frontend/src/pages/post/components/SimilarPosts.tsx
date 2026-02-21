@@ -35,7 +35,7 @@ export default function SimilarPosts({ posts }: { posts: PostFieldsFragment[] })
               e.currentTarget.style.borderColor = 'var(--mantine-color-default-border)';
             }}
           >
-            <Title order={5} lineClamp={2}>
+            <Title order={5} lineClamp={1}>
               {post.title}
             </Title>
             {post.hook && (

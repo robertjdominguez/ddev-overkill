@@ -3,6 +3,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigationType, useOutlet } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
+import { PageMetaProvider, MetaHead } from '@/components/MetaHead';
 import SideNav from './SideNav';
 
 export default function AppShellLayout() {
@@ -33,6 +34,8 @@ export default function AppShellLayout() {
   };
 
   return (
+    <PageMetaProvider>
+    <MetaHead />
     <AppShell padding={{ base: 'lg', sm: 'xl' }}>
       <Affix position={{ top: 20, right: 20 }}>
         <Burger opened={opened} onClick={toggle} size="md" aria-label="Open navigation" />
@@ -64,5 +67,6 @@ export default function AppShellLayout() {
         </Container>
       )}
     </AppShell>
+    </PageMetaProvider>
   );
 }

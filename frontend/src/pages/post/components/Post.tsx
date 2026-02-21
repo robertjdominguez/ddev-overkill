@@ -1,8 +1,10 @@
 import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from 'rehype-sanitize';
 import { useGetPostBySlugQuery } from '@/generated/graphql';
+import { usePageMeta } from '@/components/MetaHead';
 import SimilarPosts from './SimilarPosts';
 
 const container = {
@@ -27,12 +29,24 @@ const item = {
 
 export default function Post() {
   const { slug } = useParams();
+  const { setPageMeta } = usePageMeta();
   const { data, loading, error } = useGetPostBySlugQuery({
     variables: { slug: slug! },
     skip: !slug,
   });
 
   const post = data?.posts[0];
+
+  useEffect(() => {
+    if (post) {
+      setPageMeta({
+        title: post.title,
+        description: post.hook ?? '',
+        image: post.image ?? '',
+        type: 'article',
+      });
+    }
+  }, [post, setPageMeta]);
 
   return (
     <motion.div variants={container} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-xl)' }}>
