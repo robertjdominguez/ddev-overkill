@@ -12,6 +12,7 @@ const envSchema = z.object({
   HASURA_GRAPHQL_JWT_KEY: z.string().min(1),
   ADMIN_USERNAME: z.string().default("admin"),
   ADMIN_PASSWORD_HASH: z.string().min(1),
+  RESEND_API_KEY: z.string().min(1),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

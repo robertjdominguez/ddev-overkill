@@ -6,6 +6,7 @@ import { handleAction } from "./handlers";
 import { handleGenerateEmbeddings } from "./lib/embeddings";
 import { handleGeneratePostEmbedding } from "./handlers/generatePostEmbedding";
 import { handleUploadAsset } from "./handlers/uploadAsset";
+import { handleSendWelcomeEmail } from "./handlers/sendWelcomeEmail";
 import type { HasuraActionRequest } from "./types";
 import type { Request, Response, NextFunction } from "express";
 
@@ -46,6 +47,13 @@ app.post(
   "/generate-post-embedding",
   asyncHandler(async (req: Request, res: Response) => {
     await handleGeneratePostEmbedding(req, res, appContext);
+  }),
+);
+
+app.post(
+  "/send-welcome-email",
+  asyncHandler(async (req: Request, res: Response) => {
+    await handleSendWelcomeEmail(req, res, appContext);
   }),
 );
 

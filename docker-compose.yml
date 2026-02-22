@@ -102,6 +102,7 @@ services:
       HASURA_GRAPHQL_JWT_KEY: ${HASURA_GRAPHQL_JWT_KEY}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
+      RESEND_API_KEY: ${RESEND_API_KEY}
     depends_on:
       postgres:
         condition: service_healthy

@@ -58,6 +58,7 @@ services:
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       ACTIONS_URL: http://actions:3001/actions
+      ACTIONS_WEBHOOK_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
     volumes:
       - ../hasura/migrations:/hasura-migrations
       - ../hasura/metadata:/hasura-metadata
@@ -88,6 +89,7 @@ services:
       HASURA_GRAPHQL_JWT_KEY: ${HASURA_GRAPHQL_JWT_KEY}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
+      RESEND_API_KEY: ${RESEND_API_KEY}
     depends_on:
       postgres:
         condition: service_healthy

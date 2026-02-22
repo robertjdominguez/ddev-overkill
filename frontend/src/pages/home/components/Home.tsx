@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Title, Text, Button, Group, Box } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import classes from './Home.module.css';
+import SubscribeModal from './SubscribeModal';
 
 const container = {
   hidden: {
@@ -24,7 +26,10 @@ const item = {
 };
 
 export default function Home() {
+  const [opened, setOpened] = useState(false);
+
   return (
+  <>
     <motion.div variants={container} initial="hidden" animate="visible" className={classes.hero}>
       <motion.div variants={item} className={classes.deets}>
         <Title order={1}>I'm Rob, welcome to my site.</Title>
@@ -40,6 +45,9 @@ export default function Home() {
           .
         </Text>
         <Group justify="flex-end">
+          <Button variant="outline" radius="sm" size="sm" onClick={() => setOpened(true)}>
+            Stay in the loop
+          </Button>
           <Button component={Link} to="/posts" variant="light" radius="sm" size="sm">
             What I'm writing <span className={classes.shaka}>🤙</span>
           </Button>
@@ -51,5 +59,7 @@ export default function Home() {
         </Box>
       </motion.div>
     </motion.div>
+    <SubscribeModal opened={opened} onClose={() => setOpened(false)} />
+  </>
   );
 }

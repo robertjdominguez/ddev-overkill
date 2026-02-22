@@ -1,0 +1,38 @@
+table:
+  schema: public
+  name: newsletter_subscribers
+configuration:
+  column_config:
+    created_at:
+      custom_name: createdAt
+insert_permissions:
+  - role: public
+    permission:
+      columns:
+        - email
+      check: {}
+      set:
+        created_at: "now()"
+select_permissions:
+  - role: site_admin
+    permission:
+      columns:
+        - id
+        - email
+        - created_at
+      filter: {}
+      allow_aggregations: true
+event_triggers:
+  - name: send_welcome_email
+    definition:
+      enable_manual: true
+      insert:
+        columns: "*"
+    retry_conf:
+      num_retries: 3
+      interval_sec: 10
+      timeout_sec: 60
+    webhook: http://actions:3001/send-welcome-email
+    headers:
+      - name: x-hasura-admin-secret
+        value_from_env: ACTIONS_WEBHOOK_SECRET
