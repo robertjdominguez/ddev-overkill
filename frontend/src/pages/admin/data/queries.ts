@@ -47,6 +47,10 @@ export const UPDATE_POST = gql`
     update_posts_by_pk(pk_columns: { id: $id }, _set: { slug: $slug, title: $title, hook: $hook, body: $body, image: $image }) {
       id
       slug
+      title
+      hook
+      body
+      image
       isPublished
       firstPublished
       updatedAt
@@ -59,6 +63,10 @@ export const PUBLISH_POST = gql`
     update_posts_by_pk(pk_columns: { id: $id }, _set: { slug: $slug, title: $title, hook: $hook, body: $body, image: $image, isPublished: true, firstPublished: $firstPublished }) {
       id
       slug
+      title
+      hook
+      body
+      image
       isPublished
       firstPublished
       updatedAt

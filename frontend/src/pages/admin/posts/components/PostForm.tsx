@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { TextInput, Button, Stack, Image, Group, Badge, Text } from '@mantine/core';
+import { TextInput, Button, Stack, Image, Group, Badge, Text, Loader } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import MDEditor from '@uiw/react-md-editor';
 import { useAuth } from '@/lib/auth';
+import type { AutoSaveStatus } from '../hooks/useAutoSave';
 
 export interface PostFormValues {
   slug: string;
@@ -14,13 +15,14 @@ export interface PostFormValues {
 
 interface PostFormProps {
   initialValues?: Partial<PostFormValues>;
-  onSubmit: (values: PostFormValues) => void;
   onPublish?: (values: PostFormValues) => void;
   onUnpublish?: () => void;
+  onAutoSave?: (values: PostFormValues) => void;
+  autoSaveStatus?: AutoSaveStatus;
+  autoSavedAt?: Date | null;
   isPublished?: boolean;
   firstPublished?: string | null;
   loading?: boolean;
-  submitLabel?: string;
 }
 
 function slugify(text: string): string {
@@ -32,13 +34,14 @@ function slugify(text: string): string {
 
 export default function PostForm({
   initialValues,
-  onSubmit,
   onPublish,
   onUnpublish,
+  onAutoSave,
+  autoSaveStatus,
+  autoSavedAt,
   isPublished,
   firstPublished,
   loading,
-  submitLabel = 'Save',
 }: PostFormProps) {
   const { token } = useAuth();
   const [title, setTitle] = useState(initialValues?.title ?? '');
@@ -54,6 +57,10 @@ export default function PostForm({
       setSlug(slugify(title));
     }
   }, [title, slugManual]);
+
+  useEffect(() => {
+    onAutoSave?.({ slug, title, hook, body, image });
+  }, [slug, title, hook, body, image]);
 
   const handleImageUpload = async (file: File | null) => {
     if (!file) return;
@@ -79,11 +86,6 @@ export default function PostForm({
 
   const getValues = (): PostFormValues => ({ slug, title, hook, body, image });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(getValues());
-  };
-
   const handlePublish = () => {
     onPublish?.(getValues());
   };
@@ -99,8 +101,7 @@ export default function PostForm({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Stack>
+    <Stack>
         {isPublished !== undefined && (
           <Group>
             <Badge color={isPublished ? 'green' : 'gray'} variant="filled" size="lg">
@@ -174,9 +175,6 @@ export default function PostForm({
           />
         </div>
         <Group>
-          <Button type="submit" loading={loading}>
-            {submitLabel}
-          </Button>
           {onPublish && !isPublished && (
             <Button color="green" onClick={handlePublish} loading={loading}>
               Publish
@@ -187,8 +185,21 @@ export default function PostForm({
               Unpublish
             </Button>
           )}
+          {autoSaveStatus === 'saving' && (
+            <Group gap="xs" ml="auto">
+              <Loader size="xs" />
+              <Text size="sm" c="dimmed">Saving...</Text>
+            </Group>
+          )}
+          {autoSaveStatus === 'saved' && autoSavedAt && (
+            <Text size="sm" c="dimmed" ml="auto">
+              Last saved at {autoSavedAt.toLocaleTimeString()}
+            </Text>
+          )}
+          {autoSaveStatus === 'error' && (
+            <Text size="sm" c="red" ml="auto">Save failed</Text>
+          )}
         </Group>
-      </Stack>
-    </form>
+    </Stack>
   );
 }
