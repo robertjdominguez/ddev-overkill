@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import mjml2html from "mjml";
+import jwt from "jsonwebtoken";
 import { readFileSync } from "fs";
 import { join } from "path";
 import type { AppContext } from "../config/context";
@@ -8,7 +9,7 @@ const SITE_URL = "https://dominguezdev.com";
 const FROM_EMAIL = "Rob <hello@dominguezdev.com>";
 
 let resendClient: Resend | null = null;
-let cachedWelcomeHtml: string | null = null;
+let cachedWelcomeTemplate: string | null = null;
 
 function getResend(context: AppContext): Resend {
   if (!resendClient) {
@@ -17,14 +18,23 @@ function getResend(context: AppContext): Resend {
   return resendClient;
 }
 
-function getWelcomeHtml(): string {
-  if (!cachedWelcomeHtml) {
+function generateUnsubscribeUrl(email: string, context: AppContext): string {
+  const token = jwt.sign(
+    { sub: email, purpose: "unsubscribe" },
+    context.env.HASURA_GRAPHQL_JWT_KEY,
+    { algorithm: "HS256" },
+  );
+  return `${SITE_URL}/unsubscribe?token=${token}`;
+}
+
+function getWelcomeTemplate(): string {
+  if (!cachedWelcomeTemplate) {
     const mjmlPath = join(__dirname, "../templates/welcome-email.mjml");
     const mjmlContent = readFileSync(mjmlPath, "utf-8");
     const { html } = mjml2html(mjmlContent);
-    cachedWelcomeHtml = html.replaceAll("{{siteUrl}}", SITE_URL);
+    cachedWelcomeTemplate = html.replaceAll("{{siteUrl}}", SITE_URL);
   }
-  return cachedWelcomeHtml;
+  return cachedWelcomeTemplate!;
 }
 
 export async function sendWelcomeEmail(
@@ -32,12 +42,20 @@ export async function sendWelcomeEmail(
   context: AppContext,
 ): Promise<void> {
   const resend = getResend(context);
-  const html = getWelcomeHtml();
+  const unsubscribeUrl = generateUnsubscribeUrl(email, context);
+  const html = getWelcomeTemplate().replaceAll(
+    "{{unsubscribeUrl}}",
+    unsubscribeUrl,
+  );
 
   await resend.emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: "Welcome aboard!",
     html,
+    headers: {
+      "List-Unsubscribe": `<${unsubscribeUrl}>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    },
   });
 }

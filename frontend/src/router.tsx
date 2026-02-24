@@ -6,6 +6,7 @@ import Post from './pages/post';
 import PostsLayout from './pages/posts/components/PostsLayout';
 import RequireAuth from './components/Auth/RequireAuth';
 import AdminLogin from './pages/admin/AdminLogin';
+import Unsubscribe from './pages/unsubscribe/Unsubscribe';
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminPosts from './pages/admin/posts/AdminPosts';
 import AdminPostCreate from './pages/admin/posts/AdminPostCreate';
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
     ],
   },
   { path: '/admin/login', element: <AdminLogin /> },
+  { path: '/unsubscribe', element: <Unsubscribe /> },
   {
     path: '/admin',
     element: (

@@ -42,6 +42,19 @@ actions:
     permissions:
       - role: public
     comment: Admin login - returns JWT token
+  - name: unsubscribe
+    definition:
+      kind: synchronous
+      handler: "{{ACTIONS_URL}}"
+      forward_client_headers: false
+      output_type: UnsubscribeOutput!
+      arguments:
+        - name: token
+          type: String!
+      type: mutation
+    permissions:
+      - role: public
+    comment: Unsubscribe from newsletter via magic-link token
 custom_types:
   enums: []
   input_objects: []
@@ -49,4 +62,5 @@ custom_types:
     - name: HelloOutput
     - name: SearchResult
     - name: LoginOutput
+    - name: UnsubscribeOutput
   scalars: []

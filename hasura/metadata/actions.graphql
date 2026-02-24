@@ -5,6 +5,7 @@ type Query {
 
 type Mutation {
   adminLogin(username: String!, password: String!): LoginOutput!
+  unsubscribe(token: String!): UnsubscribeOutput!
 }
 
 type HelloOutput {
@@ -24,4 +25,8 @@ type SearchResult {
 type LoginOutput {
   token: String!
   expiresAt: String!
+}
+
+type UnsubscribeOutput {
+  success: Boolean!
 }

@@ -4,6 +4,7 @@ import type { Response } from "express";
 import { handleHello } from "./hello";
 import { handleSearchPosts } from "./searchPosts";
 import { handleAdminLogin } from "./adminLogin";
+import { handleUnsubscribe } from "./unsubscribe";
 
 type ActionHandler = (
   request: HasuraActionRequest,
@@ -15,6 +16,7 @@ const actionHandlers: Record<string, ActionHandler> = {
   hello: handleHello,
   searchPosts: handleSearchPosts,
   adminLogin: handleAdminLogin,
+  unsubscribe: handleUnsubscribe,
 };
 
 export async function handleAction(
