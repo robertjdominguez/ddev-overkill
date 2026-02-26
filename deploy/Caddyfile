@@ -33,7 +33,7 @@
 
         route {
             # Bots get OG meta tags instead of the SPA
-            rewrite @bot * /og?path={uri}
+            rewrite @bot /og?path={uri}
             reverse_proxy @bot actions:3001
 
             header @static Cache-Control "public, max-age=31536000, immutable"
