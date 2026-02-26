@@ -21,25 +21,25 @@
         reverse_proxy actions:3001
     }
 
-    # Social media bot OG tags
-    @bot header_regexp User-Agent (?i)(facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|TelegramBot|Googlebot|bingbot)
-    handle @bot {
-        rewrite * /og?path={uri}
-        reverse_proxy actions:3001
-    }
-
     # Health check
     handle /health {
         respond "healthy" 200
     }
 
-    # Frontend SPA
+    # Frontend SPA (with bot detection for OG tags)
     handle {
-        root * /srv
-        try_files {path} /index.html
-        file_server
-
+        @bot header_regexp User-Agent (?i)(facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|TelegramBot|Googlebot|bingbot)
         @static path *.js *.css *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2
-        header @static Cache-Control "public, max-age=31536000, immutable"
+
+        route {
+            # Bots get OG meta tags instead of the SPA
+            rewrite @bot * /og?path={uri}
+            reverse_proxy @bot actions:3001
+
+            header @static Cache-Control "public, max-age=31536000, immutable"
+            root * /srv
+            try_files {path} /index.html
+            file_server
+        }
     }
 }
