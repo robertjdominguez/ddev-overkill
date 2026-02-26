@@ -21,6 +21,13 @@
         reverse_proxy actions:3001
     }
 
+    # Social media bot OG tags
+    @bot header_regexp User-Agent (?i)(facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|TelegramBot|Googlebot|bingbot)
+    handle @bot {
+        rewrite * /og?path={uri}
+        reverse_proxy actions:3001
+    }
+
     # Health check
     handle /health {
         respond "healthy" 200

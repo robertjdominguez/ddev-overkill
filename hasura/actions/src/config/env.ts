@@ -13,6 +13,7 @@ const envSchema = z.object({
   ADMIN_USERNAME: z.string().default("admin"),
   ADMIN_PASSWORD_HASH: z.string().min(1),
   RESEND_API_KEY: z.string().min(1),
+  SITE_URL: z.string().default("https://dominguezdev.com"),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

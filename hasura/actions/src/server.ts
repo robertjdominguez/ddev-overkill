@@ -7,6 +7,7 @@ import { handleGenerateEmbeddings } from "./lib/embeddings";
 import { handleGeneratePostEmbedding } from "./handlers/generatePostEmbedding";
 import { handleUploadAsset } from "./handlers/uploadAsset";
 import { handleSendWelcomeEmail } from "./handlers/sendWelcomeEmail";
+import { handleOg } from "./handlers/og";
 import type { HasuraActionRequest } from "./types";
 import type { Request, Response, NextFunction } from "express";
 
@@ -27,6 +28,13 @@ function asyncHandler(
 app.get("/healthz", (_req: Request, res: Response) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
+app.get(
+  "/og",
+  asyncHandler(async (req: Request, res: Response) => {
+    await handleOg(req, res, appContext);
+  }),
+);
 
 app.post(
   "/actions",
