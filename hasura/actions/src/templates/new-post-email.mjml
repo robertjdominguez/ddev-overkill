@@ -1,0 +1,65 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Cabin, Arial, sans-serif" color="#f2f2f2" />
+      <mj-body background-color="#020113" />
+      <mj-section background-color="#020113" />
+      <mj-text font-size="16px" line-height="1.6" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#020113">
+    <mj-section padding="40px 20px 10px">
+      <mj-column>
+        <mj-divider border-color="#7573f5" border-width="2px" />
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="20px 20px 0">
+      <mj-column>
+        <mj-image src="{{siteUrl}}/face.png" alt="Rob Dominguez" width="100px" border-radius="50%" css-class="face" />
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="10px 20px">
+      <mj-column>
+        <mj-text font-size="28px" font-weight="700" align="center">
+          {{postTitle}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="0 20px">
+      <mj-column>
+        <mj-divider border-color="#7573f5" border-width="2px" />
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="20px 20px">
+      <mj-column>
+        <mj-text>
+          {{emailBody}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="10px 20px 40px">
+      <mj-column>
+        <mj-button background-color="#504df9" color="#f2f2f2" border-radius="4px" font-size="16px" font-weight="600" href="{{postUrl}}" padding="20px 0">
+          Read the Post
+        </mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="0 20px 40px">
+      <mj-column>
+        <mj-divider border-color="#7573f5" border-width="1px" />
+        <mj-text font-size="12px" color="#888888" align="center" padding-top="20px">
+          You received this email because you subscribed at {{siteUrl}}
+        </mj-text>
+        <mj-text font-size="12px" color="#888888" align="center" padding-top="0">
+          <a href="{{unsubscribeUrl}}" style="color: #888888; text-decoration: underline;">Unsubscribe</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

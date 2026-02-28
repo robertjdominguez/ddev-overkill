@@ -108,3 +108,17 @@ event_triggers:
     headers:
       - name: x-hasura-admin-secret
         value_from_env: ACTIONS_WEBHOOK_SECRET
+  - name: notify_subscribers_on_publish
+    definition:
+      enable_manual: true
+      update:
+        columns:
+          - is_published
+    retry_conf:
+      num_retries: 3
+      interval_sec: 10
+      timeout_sec: 120
+    webhook: http://actions:3001/notify-subscribers
+    headers:
+      - name: x-hasura-admin-secret
+        value_from_env: ACTIONS_WEBHOOK_SECRET

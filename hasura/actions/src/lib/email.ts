@@ -10,6 +10,7 @@ const FROM_EMAIL = "Rob <hello@dominguezdev.com>";
 
 let resendClient: Resend | null = null;
 let cachedWelcomeTemplate: string | null = null;
+let cachedNewPostTemplate: string | null = null;
 
 function getResend(context: AppContext): Resend {
   if (!resendClient) {
@@ -35,6 +36,68 @@ function getWelcomeTemplate(): string {
     cachedWelcomeTemplate = html.replaceAll("{{siteUrl}}", SITE_URL);
   }
   return cachedWelcomeTemplate!;
+}
+
+function getNewPostTemplate(): string {
+  if (!cachedNewPostTemplate) {
+    const mjmlPath = join(__dirname, "../templates/new-post-email.mjml");
+    const mjmlContent = readFileSync(mjmlPath, "utf-8");
+    const { html } = mjml2html(mjmlContent);
+    cachedNewPostTemplate = html.replaceAll("{{siteUrl}}", SITE_URL);
+  }
+  return cachedNewPostTemplate!;
+}
+
+interface SendNewPostResult {
+  sent: number;
+  failed: number;
+}
+
+export async function sendNewPostEmails(
+  subscribers: { email: string }[],
+  post: { title: string; slug: string },
+  emailBody: string,
+  emailSubject: string,
+  context: AppContext,
+): Promise<SendNewPostResult> {
+  const resend = getResend(context);
+  const postUrl = `${SITE_URL}/posts/${post.slug}`;
+
+  const baseHtml = getNewPostTemplate()
+    .replaceAll("{{postTitle}}", post.title)
+    .replaceAll("{{emailBody}}", emailBody)
+    .replaceAll("{{postUrl}}", postUrl);
+
+  let sent = 0;
+  let failed = 0;
+
+  for (let i = 0; i < subscribers.length; i += 100) {
+    const batch = subscribers.slice(i, i + 100);
+    const emails = batch.map((sub) => {
+      const unsubscribeUrl = generateUnsubscribeUrl(sub.email, context);
+      const html = baseHtml.replaceAll("{{unsubscribeUrl}}", unsubscribeUrl);
+      return {
+        from: FROM_EMAIL,
+        to: sub.email,
+        subject: emailSubject,
+        html,
+        headers: {
+          "List-Unsubscribe": `<${unsubscribeUrl}>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        },
+      };
+    });
+
+    try {
+      await resend.batch.send(emails);
+      sent += batch.length;
+    } catch (err) {
+      console.error(`Batch send failed (offset ${i}):`, err);
+      failed += batch.length;
+    }
+  }
+
+  return { sent, failed };
 }
 
 export async function sendWelcomeEmail(
