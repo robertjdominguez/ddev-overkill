@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Title, Text, Button, Group, Box } from '@mantine/core';
+import { Title, Text, Button, Group, Stack, Box } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import classes from './Home.module.css';
@@ -44,14 +44,22 @@ export default function Home() {
           </Text>
           .
         </Text>
-        <Group justify="flex-end">
-          <Button variant="outline" radius="sm" size="sm" onClick={() => setOpened(true)}>
-            Stay in the loop
-          </Button>
+        <Group justify="flex-end" visibleFrom="sm">
           <Button component={Link} to="/posts" variant="light" radius="sm" size="sm">
             What I'm writing <span className={classes.shaka}>🤙</span>
           </Button>
+          <Button variant="outline" radius="sm" size="sm" onClick={() => setOpened(true)}>
+            Stay in the loop
+          </Button>
         </Group>
+        <Stack hiddenFrom="sm">
+          <Button component={Link} to="/posts" variant="light" radius="sm" size="sm" fullWidth>
+            What I'm writing <span className={classes.shaka}>🤙</span>
+          </Button>
+          <Button variant="outline" radius="sm" size="sm" onClick={() => setOpened(true)} fullWidth>
+            Stay in the loop
+          </Button>
+        </Stack>
       </motion.div>
       <motion.div variants={item} style={{ display: 'flex', justifyContent: 'center' }}>
         <Box className={classes.imageWrapper}>
