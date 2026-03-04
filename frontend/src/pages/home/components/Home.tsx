@@ -45,11 +45,11 @@ export default function Home() {
           .
         </Text>
         <Group justify="flex-end" visibleFrom="sm">
-          <Button component={Link} to="/posts" variant="light" radius="sm" size="sm">
-            What I'm writing <span className={classes.shaka}>🤙</span>
-          </Button>
           <Button variant="outline" radius="sm" size="sm" onClick={() => setOpened(true)}>
             Stay in the loop
+          </Button>
+          <Button component={Link} to="/posts" variant="light" radius="sm" size="sm">
+            What I'm writing <span className={classes.shaka}>🤙</span>
           </Button>
         </Group>
         <Stack hiddenFrom="sm">
