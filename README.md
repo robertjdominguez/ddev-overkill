@@ -7,29 +7,25 @@ The name says it all. Markdown files go in, get ingested into a database at seed
 ## How it all fits together
 
 ```mermaid
-architecture-beta
-    group ingestion[Ingestion]
-    group backend[Backend]
-    group frontend[Frontend]
+flowchart LR
+    subgraph Backend
+        pg[(Postgres pgvector)]
+        minio[(MinIO)]
+        hasura[Hasura]
+        actions[Actions]
+        openai([OpenAI])
+    end
 
-    service posts(disk)[posts/] in ingestion
-    service seed(server)[Seed] in ingestion
-    service pg(database)[Postgres pgvector] in backend
-    service minio(disk)[MinIO] in backend
-    service hasura(server)[Hasura] in backend
-    service actions(server)[Actions] in backend
-    service openai(cloud)[OpenAI] in backend
-    service vite(server)[React Vite] in frontend
+    subgraph Frontend
+        vite[React Vite]
+    end
 
-    posts:R --> L:seed
-    seed:R --> L:pg
-    seed:B --> T:minio
-    pg:R --> L:hasura
-    hasura:R --> L:vite
-    hasura:B --> T:actions
-    actions:L --> R:openai
-    actions:B --> T:pg
-    actions:B --> T:minio
+    pg --> hasura
+    hasura --> vite
+    hasura --> actions
+    actions --> openai
+    actions --> pg
+    actions --> minio
 ```
 
 ## Prerequisites
