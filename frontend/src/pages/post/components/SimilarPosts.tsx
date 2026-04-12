@@ -1,8 +1,9 @@
 import { SimpleGrid, Text, Title, UnstyledButton } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import type { PostFieldsFragment } from '@/generated/graphql';
+import { track } from '@/lib/analytics';
 
-export default function SimilarPosts({ posts }: { posts: PostFieldsFragment[] }) {
+export default function SimilarPosts({ posts, sourceSlug }: { posts: PostFieldsFragment[]; sourceSlug?: string }) {
   if (posts.length === 0) return null;
 
   return (
@@ -19,6 +20,15 @@ export default function SimilarPosts({ posts }: { posts: PostFieldsFragment[] })
             key={post.id}
             component={Link}
             to={`/posts/${post.slug}`}
+            onClick={() => {
+              if (sourceSlug) {
+                track('similarity.clicked', {
+                  source_post_slug: sourceSlug,
+                  clicked_post_slug: post.slug,
+                  similarity_score: null,
+                });
+              }
+            }}
             style={{
               display: 'flex',
               flexDirection: 'column',

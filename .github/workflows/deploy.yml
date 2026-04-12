@@ -46,6 +46,17 @@ jobs:
           script: |
             cd /opt/ddev-overkill
             git pull
+
+            # Validate required env vars before deploy
+            . .env
+            for var in KAFKA_CLUSTER_ID IP_SALT; do
+              eval val=\$$var
+              if [ -z "$val" ]; then
+                echo "FATAL: $var is not set in .env" >&2
+                exit 1
+              fi
+            done
+
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose --env-file .env -f deploy/docker-compose.yml pull frontend
             docker compose --env-file .env -f deploy/docker-compose.yml up -d --build
