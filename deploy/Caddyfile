@@ -43,3 +43,8 @@
         }
     }
 }
+
+# Analytics subdomain — Grafana dashboard
+analytics.{$DOMAIN:localhost} {
+    reverse_proxy grafana:3000
+}

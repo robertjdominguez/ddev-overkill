@@ -11,6 +11,8 @@ COPY --chown=bunuser:bunuser package.json bun.lock* ./
 RUN bun install --frozen-lockfile
 
 COPY --chown=bunuser:bunuser . .
+# Copy MaxMind DB if present (geo enrichment is optional)
+COPY --chown=bunuser:bunuser data/ ./data/
 
 USER bunuser
 

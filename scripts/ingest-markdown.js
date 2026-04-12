@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { Client } = require('pg');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { Kafka } = require('kafkajs');
 
 const POSTS_DIR = process.env.POSTS_DIR || '/posts';
 const PROJECTS_DIR = process.env.PROJECTS_DIR || '/projects';
@@ -12,6 +14,22 @@ const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'http://minio:9000';
 const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'minioadmin';
 const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY || 'minioadmin';
 const MINIO_BUCKET = process.env.MINIO_BUCKET || 'assets';
+const KAFKA_BROKER = process.env.KAFKA_BROKER || 'kafka:9092';
+
+// Deterministic UUID v5 namespace for seed events
+const SEED_NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+
+function deterministicUUID(slug) {
+  // SHA-1 based UUID v5 from slug
+  const hash = crypto.createHash('sha1').update(SEED_NAMESPACE + slug).digest('hex');
+  return [
+    hash.slice(0, 8),
+    hash.slice(8, 12),
+    '5' + hash.slice(13, 16),
+    ((parseInt(hash.slice(16, 18), 16) & 0x3f) | 0x80).toString(16).padStart(2, '0') + hash.slice(18, 20),
+    hash.slice(20, 32),
+  ].join('-');
+}
 
 const s3 = new S3Client({
   endpoint: MINIO_ENDPOINT,
@@ -91,14 +109,15 @@ function parseMarkdownFiles(dir) {
 
 async function upsertPost(client, post) {
   const sql = `
-    INSERT INTO posts (slug, title, hook, body, image, created_at, updated_at)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    INSERT INTO posts (slug, title, hook, body, image, created_at, updated_at, is_published)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, true)
     ON CONFLICT (slug) DO UPDATE SET
       title = EXCLUDED.title,
       hook = EXCLUDED.hook,
       body = EXCLUDED.body,
       image = EXCLUDED.image,
-      updated_at = EXCLUDED.updated_at
+      updated_at = EXCLUDED.updated_at,
+      is_published = true
   `;
   await client.query(sql, [
     post.slug,
@@ -196,6 +215,12 @@ async function main() {
   await client.connect();
   console.log('Connected to Postgres');
 
+  // Connect Kafka producer
+  const kafka = new Kafka({ clientId: 'seed-pipeline', brokers: [KAFKA_BROKER] });
+  const producer = kafka.producer();
+  await producer.connect();
+  console.log('Kafka producer connected');
+
   // Ingest posts
   const posts = parseMarkdownFiles(POSTS_DIR);
   console.log(`Found ${posts.length} posts`);
@@ -207,6 +232,30 @@ async function main() {
       }
       post.body = await rewriteBodyImages(post.body);
       await upsertPost(client, post);
+
+      // Produce post.created event
+      const event = {
+        event_id: deterministicUUID(post.slug),
+        event_type: 'post.created',
+        session_id: 'seed-pipeline',
+        ip_hash: null,
+        country: null,
+        region: null,
+        city: null,
+        latitude: null,
+        longitude: null,
+        timestamp: new Date().toISOString(),
+        app_version: process.env.APP_VERSION || '1.0.0',
+        post_slug: post.slug,
+        post_title: post.title,
+        tag_count: 0,
+        has_embedding: 0,
+      };
+      await producer.send({
+        topic: 'site.post.created',
+        messages: [{ key: event.event_id, value: JSON.stringify(event) }],
+      });
+
       console.log(`✓ Post: ${post.title}`);
     } catch (err) {
       console.error(`✗ Failed: ${post.title}`, err.message);
@@ -229,6 +278,7 @@ async function main() {
     }
   }
 
+  await producer.disconnect();
   await client.end();
   console.log('Done!');
 }

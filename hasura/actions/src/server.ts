@@ -9,13 +9,19 @@ import { handleUploadAsset } from "./handlers/uploadAsset";
 import { handleSendWelcomeEmail } from "./handlers/sendWelcomeEmail";
 import { handleNotifySubscribers } from "./handlers/notifySubscribers";
 import { handleOg } from "./handlers/og";
+import { handleTrack } from "./handlers/track";
+import { connectProducer } from "./lib/kafka";
+import { initGeoReader } from "./lib/geo";
 import type { HasuraActionRequest } from "./types";
 import type { Request, Response, NextFunction } from "express";
 
 const env = validateEnv();
-const appContext = createAppContext(env);
+
+// Initialize MaxMind geo reader (non-blocking — missing DB just disables geo)
+initGeoReader(env.MAXMIND_DB_PATH);
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(cors());
 app.use(express.json());
 
@@ -42,6 +48,13 @@ app.post(
   asyncHandler(async (req: Request, res: Response) => {
     const actionRequest: HasuraActionRequest = req.body;
     await handleAction(actionRequest.action.name, actionRequest, res, appContext);
+  }),
+);
+
+app.post(
+  "/actions/track",
+  asyncHandler(async (req: Request, res: Response) => {
+    await handleTrack(req, res, appContext);
   }),
 );
 
@@ -89,6 +102,17 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-app.listen(env.PORT, () => {
-  console.log(`Actions server running on port ${env.PORT}`);
-});
+// Connect Kafka producer, then start server
+let appContext: ReturnType<typeof createAppContext>;
+
+connectProducer(env.KAFKA_BROKER)
+  .then((producer) => {
+    appContext = createAppContext(env, producer);
+    app.listen(env.PORT, () => {
+      console.log(`Actions server running on port ${env.PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect Kafka producer:", err);
+    process.exit(1);
+  });

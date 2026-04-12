@@ -3,6 +3,7 @@ import { CloseButton, Skeleton, Stack, Text, TextInput } from '@mantine/core';
 import { useDebouncedValue, useInputState } from '@mantine/hooks';
 import { Search } from 'lucide-react';
 import { useSearchPostsLazyQuery } from '@/generated/graphql';
+import { track } from '@/lib/analytics';
 import SearchResult from './SearchResult';
 import classes from './SearchPosts.module.css';
 
@@ -32,7 +33,12 @@ export default function SearchPosts({ onSearchActive }: SearchPostsProps) {
 
   useEffect(() => {
     if (active) {
-      search({ variables: { query: debounced.trim(), limit: 20 } });
+      search({ variables: { query: debounced.trim(), limit: 20 } }).then((result) => {
+        track('search.performed', {
+          query: debounced.trim(),
+          result_count: result.data?.searchPosts?.length ?? 0,
+        });
+      });
     }
   }, [debounced, active, search]);
 

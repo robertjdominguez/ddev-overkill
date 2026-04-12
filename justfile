@@ -53,3 +53,15 @@ generate-embeddings:
     curl -s -X POST http://localhost:3001/generate-embeddings \
         -H 'Content-Type: application/json' \
         -H 'x-hasura-admin-secret: myadminsecret' | python3 -m json.tool
+
+# List Kafka topics
+kafka-topics:
+    docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+# Open a ClickHouse client shell
+clickhouse-client:
+    docker compose exec clickhouse clickhouse-client
+
+# Open Grafana in browser
+grafana:
+    open http://localhost:3000

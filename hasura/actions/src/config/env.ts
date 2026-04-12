@@ -14,6 +14,10 @@ const envSchema = z.object({
   ADMIN_PASSWORD_HASH: z.string().min(1),
   RESEND_API_KEY: z.string().min(1),
   SITE_URL: z.string().default("https://dominguezdev.com"),
+  KAFKA_BROKER: z.string().default("kafka:9092"),
+  IP_SALT: z.string().min(1),
+  APP_VERSION: z.string().default("1.0.0"),
+  MAXMIND_DB_PATH: z.string().default("/app/data/GeoLite2-City.mmdb"),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

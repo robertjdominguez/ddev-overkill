@@ -1,0 +1,538 @@
+{
+  "uid": "analytics-overview",
+  "title": "Site Analytics",
+  "description": "Behavioral analytics overview — post views, searches, similarity clicks, and geo data",
+  "tags": ["analytics", "clickhouse"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Total Post Views",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT count() AS views FROM post_viewed",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 100 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Unique Visitors",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT uniqExact(ip_hash) AS visitors FROM post_viewed WHERE ip_hash IS NOT NULL",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "purple", "value": null },
+              { "color": "green", "value": 50 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Total Searches",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT count() AS searches FROM search_performed",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "orange", "value": null },
+              { "color": "green", "value": 50 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Similarity Clicks",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT count() AS clicks FROM similarity_clicked",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "yellow", "value": null },
+              { "color": "green", "value": 20 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 5,
+      "title": "Unique Sessions",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT uniqExact(session_id) AS sessions FROM post_viewed",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "semi-dark-green", "value": null }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Posts Ingested",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT count() AS posts FROM post_created",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "semi-dark-blue", "value": null }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 7,
+      "title": "Post Views Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT toStartOfFiveMinutes(timestamp) AS time, count() AS views FROM post_viewed GROUP BY time ORDER BY time",
+          "format": 0,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "pointSize": 8,
+            "showPoints": "always",
+            "lineWidth": 2,
+            "gradientMode": "scheme"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "single" },
+        "legend": { "displayMode": "hidden" }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Searches Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT toStartOfFiveMinutes(timestamp) AS time, count() AS searches FROM search_performed GROUP BY time ORDER BY time",
+          "format": 0,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "pointSize": 8,
+            "showPoints": "always",
+            "lineWidth": 2,
+            "gradientMode": "scheme"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "single" },
+        "legend": { "displayMode": "hidden" }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Top Posts by Views",
+      "type": "table",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 12 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT post_slug, post_title, count() AS views, uniqExact(session_id) AS unique_sessions, min(timestamp) AS first_viewed, max(timestamp) AS last_viewed FROM post_viewed GROUP BY post_slug, post_title ORDER BY views DESC LIMIT 20",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "views" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
+              { "id": "color", "value": { "mode": "continuous-blues" } }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "views", "desc": true }]
+      }
+    },
+    {
+      "id": 10,
+      "title": "Recent Searches",
+      "type": "table",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 12 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT query, result_count, session_id, timestamp FROM search_performed ORDER BY timestamp DESC LIMIT 50",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "result_count" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
+              { "id": "color", "value": { "mode": "continuous-greens" } }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 11,
+      "title": "Similarity Click Paths",
+      "type": "table",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 21 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT source_post_slug AS from_post, clicked_post_slug AS to_post, count() AS clicks, uniqExact(session_id) AS unique_sessions FROM similarity_clicked GROUP BY source_post_slug, clicked_post_slug ORDER BY clicks DESC LIMIT 20",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "clicks" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
+              { "id": "color", "value": { "mode": "continuous-purples" } }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "clicks", "desc": true }]
+      }
+    },
+    {
+      "id": 12,
+      "title": "Visitor Map",
+      "type": "geomap",
+      "gridPos": { "h": 12, "w": 12, "x": 12, "y": 21 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT latitude, longitude, city, country, count() AS views, uniqExact(ip_hash) AS unique_visitors FROM post_viewed WHERE latitude IS NOT NULL AND longitude IS NOT NULL GROUP BY latitude, longitude, city, country ORDER BY views DESC LIMIT 100",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "continuous-blues" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "view": {
+          "id": "zero",
+          "lat": 0,
+          "lon": 0,
+          "zoom": 1
+        },
+        "basemap": {
+          "type": "default",
+          "name": "World"
+        },
+        "layers": [
+          {
+            "type": "markers",
+            "name": "Visitors",
+            "config": {
+              "showLegend": true,
+              "style": {
+                "size": {
+                  "field": "views",
+                  "min": 4,
+                  "max": 20
+                },
+                "color": {
+                  "field": "unique_visitors",
+                  "mode": "continuous-blues"
+                },
+                "opacity": 0.8,
+                "symbol": { "mode": "fixed", "fixed": "img/icons/marker/circle.svg" }
+              }
+            },
+            "location": {
+              "mode": "coords",
+              "latitude": "latitude",
+              "longitude": "longitude"
+            },
+            "tooltip": true
+          }
+        ],
+        "tooltip": { "mode": "details" }
+      }
+    },
+    {
+      "id": 16,
+      "title": "Top Countries",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 33 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT country, count() AS views, uniqExact(ip_hash) AS unique_visitors FROM post_viewed WHERE country IS NOT NULL GROUP BY country ORDER BY views DESC LIMIT 15",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "unique_visitors" },
+            "properties": [
+              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } },
+              { "id": "color", "value": { "mode": "continuous-greens" } }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "views", "desc": true }]
+      }
+    },
+    {
+      "id": 13,
+      "title": "Views by Referrer",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 39 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT if(referrer = '' OR referrer IS NULL, 'Direct', domain(referrer)) AS source, count() AS views FROM post_viewed GROUP BY source ORDER BY views DESC LIMIT 10",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["sum"] },
+        "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] },
+        "pieType": "donut"
+      }
+    },
+    {
+      "id": 14,
+      "title": "Search Quality (avg results per query)",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 4, "x": 8, "y": 39 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT round(avg(result_count), 1) AS avg_results FROM search_performed",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "green", "value": 3 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 15,
+      "title": "Zero-Result Searches",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 39 },
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "targets": [
+        {
+          "queryType": "sql",
+          "rawSql": "SELECT query, count() AS times_searched, max(timestamp) AS last_searched FROM search_performed WHERE result_count = 0 GROUP BY query ORDER BY times_searched DESC LIMIT 20",
+          "format": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

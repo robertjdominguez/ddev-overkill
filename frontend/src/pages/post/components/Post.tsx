@@ -5,6 +5,7 @@ import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from 'rehype-sanitize';
 import { useGetPostBySlugQuery } from '@/generated/graphql';
 import { usePageMeta } from '@/components/MetaHead';
+import { track } from '@/lib/analytics';
 import SimilarPosts from './SimilarPosts';
 
 const container = {
@@ -48,6 +49,16 @@ export default function Post() {
     }
   }, [post, setPageMeta]);
 
+  useEffect(() => {
+    if (slug && post) {
+      track('post.viewed', {
+        post_slug: slug,
+        post_title: post.title,
+        referrer: document.referrer || null,
+      });
+    }
+  }, [slug, post?.title]);
+
   return (
     <motion.div variants={container} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-xl)' }}>
       <motion.div variants={item}>
@@ -77,7 +88,7 @@ export default function Post() {
       </motion.div>
       {post?.similarPosts && post.similarPosts.length > 0 && (
         <motion.div initial="hidden" animate="visible" variants={item}>
-          <SimilarPosts posts={post.similarPosts} />
+          <SimilarPosts posts={post.similarPosts} sourceSlug={slug} />
         </motion.div>
       )}
     </motion.div>
