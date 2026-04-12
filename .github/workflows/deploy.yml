@@ -44,7 +44,11 @@ jobs:
           username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
+            set -e
             cd /opt/ddev-overkill
+
+            # Reset any local modifications so git pull never fails
+            git checkout -- .
             git pull
 
             # Validate required env vars before deploy
@@ -57,9 +61,12 @@ jobs:
               fi
             done
 
+            # Ensure data dirs have correct ownership for non-root containers
+            mkdir -p /data/grafana && chown -R 472:472 /data/grafana
+
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose --env-file .env -f deploy/docker-compose.yml pull frontend
-            docker compose --env-file .env -f deploy/docker-compose.yml up -d --build
+            docker compose --env-file .env -f deploy/docker-compose.yml up -d --build --force-recreate
 
       - name: Health check
         run: |
