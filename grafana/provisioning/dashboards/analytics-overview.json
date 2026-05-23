@@ -76,70 +76,6 @@
     },
     {
       "id": 3,
-      "title": "Total Searches",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
-      "targets": [
-        {
-          "queryType": "sql",
-          "rawSql": "SELECT count() AS searches FROM search_performed",
-          "format": 1,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "orange", "value": null },
-              { "color": "green", "value": 50 }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] },
-        "colorMode": "background",
-        "graphMode": "none"
-      }
-    },
-    {
-      "id": 4,
-      "title": "Similarity Clicks",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
-      "targets": [
-        {
-          "queryType": "sql",
-          "rawSql": "SELECT count() AS clicks FROM similarity_clicked",
-          "format": 1,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "yellow", "value": null },
-              { "color": "green", "value": 20 }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] },
-        "colorMode": "background",
-        "graphMode": "none"
-      }
-    },
-    {
-      "id": 5,
       "title": "Unique Sessions",
       "type": "stat",
       "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
@@ -170,46 +106,16 @@
       }
     },
     {
-      "id": 6,
-      "title": "Posts Ingested",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
-      "targets": [
-        {
-          "queryType": "sql",
-          "rawSql": "SELECT count() AS posts FROM post_created",
-          "format": 1,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "semi-dark-blue", "value": null }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] },
-        "colorMode": "background",
-        "graphMode": "none"
-      }
-    },
-    {
-      "id": 7,
+      "id": 4,
       "title": "Post Views Over Time",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "timeFrom": "1y",
       "targets": [
         {
           "queryType": "sql",
-          "rawSql": "SELECT toStartOfFiveMinutes(timestamp) AS time, count() AS views FROM post_viewed GROUP BY time ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(timestamp) AS time, count() AS views FROM post_viewed WHERE $__timeFilter(timestamp) GROUP BY time ORDER BY time",
           "format": 0,
           "refId": "A"
         }
@@ -239,10 +145,11 @@
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
       "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
+      "timeFrom": "1y",
       "targets": [
         {
           "queryType": "sql",
-          "rawSql": "SELECT toStartOfFiveMinutes(timestamp) AS time, count() AS searches FROM search_performed GROUP BY time ORDER BY time",
+          "rawSql": "SELECT $__timeInterval(timestamp) AS time, count() AS searches FROM search_performed WHERE $__timeFilter(timestamp) GROUP BY time ORDER BY time",
           "format": 0,
           "refId": "A"
         }
@@ -508,28 +415,6 @@
         "reduceOptions": { "calcs": ["lastNotNull"] },
         "colorMode": "background",
         "graphMode": "none"
-      }
-    },
-    {
-      "id": 15,
-      "title": "Zero-Result Searches",
-      "type": "table",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 39 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-analytics" },
-      "targets": [
-        {
-          "queryType": "sql",
-          "rawSql": "SELECT query, count() AS times_searched, max(timestamp) AS last_searched FROM search_performed WHERE result_count = 0 GROUP BY query ORDER BY times_searched DESC LIMIT 20",
-          "format": 1,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "options": {
-        "showHeader": true
       }
     }
   ],
