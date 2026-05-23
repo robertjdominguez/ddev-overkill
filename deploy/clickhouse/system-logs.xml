@@ -1,0 +1,159 @@
+<clickhouse>
+  <!--
+    Cap ClickHouse's internal observability tables so they cannot fill the
+    data volume on their own. These tables are only used for CH-internal
+    debugging; the site's analytics live in the user tables in `default`.
+
+    `replace="1"` is required: default config.xml sets `<partition_by>` for
+    these system tables, which conflicts with an `<engine>` override. With
+    replace="1" the whole element is overwritten.
+
+    NOTE: the engine clause is only honored when the system table is first
+    created. To apply this to a running instance, drop the existing tables
+    once (CH will recreate them on the next flush) - see README.
+  -->
+
+  <text_log replace="1">
+    <database>system</database>
+    <table>text_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 3 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <level>warning</level>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </text_log>
+
+  <trace_log replace="1">
+    <database>system</database>
+    <table>trace_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 3 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </trace_log>
+
+  <asynchronous_metric_log replace="1">
+    <database>system</database>
+    <table>asynchronous_metric_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 3 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </asynchronous_metric_log>
+
+  <metric_log replace="1">
+    <database>system</database>
+    <table>metric_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 7 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </metric_log>
+
+  <background_schedule_pool_log replace="1">
+    <database>system</database>
+    <table>background_schedule_pool_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 3 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </background_schedule_pool_log>
+
+  <part_log replace="1">
+    <database>system</database>
+    <table>part_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 7 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </part_log>
+
+  <query_views_log replace="1">
+    <database>system</database>
+    <table>query_views_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 7 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </query_views_log>
+
+  <query_log replace="1">
+    <database>system</database>
+    <table>query_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 7 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </query_log>
+
+  <processors_profile_log replace="1">
+    <database>system</database>
+    <table>processors_profile_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 3 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </processors_profile_log>
+
+  <error_log replace="1">
+    <database>system</database>
+    <table>error_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 14 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </error_log>
+
+  <query_metric_log replace="1">
+    <database>system</database>
+    <table>query_metric_log</table>
+    <engine>
+      ENGINE = MergeTree
+      PARTITION BY event_date
+      ORDER BY (event_date, event_time)
+      TTL event_date + INTERVAL 7 DAY
+      SETTINGS ttl_only_drop_parts = 1
+    </engine>
+    <flush_interval_milliseconds>30000</flush_interval_milliseconds>
+  </query_metric_log>
+</clickhouse>

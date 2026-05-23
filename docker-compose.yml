@@ -176,6 +176,7 @@ services:
       - clickhouse_data:/var/lib/clickhouse
       - ./deploy/clickhouse/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
       - ./deploy/clickhouse/users.xml:/etc/clickhouse-server/users.d/default-user.xml:ro
+      - ./deploy/clickhouse/system-logs.xml:/etc/clickhouse-server/config.d/system-logs.xml:ro
     depends_on:
       kafka-init:
         condition: service_completed_successfully

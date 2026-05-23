@@ -1,0 +1,130 @@
+apiVersion: 1
+
+# Alerts surface in Grafana > Alerting > Alert rules. To get notifications
+# off the dashboard, add a contact point (Slack/email/webhook) and a
+# notification policy in the UI, then re-export here for posterity.
+
+groups:
+  - orgId: 1
+    name: storage
+    folder: site-overkill
+    interval: 1m
+    rules:
+      - uid: clickhouse-disk-usage-80
+        title: ClickHouse data volume > 80% used
+        condition: C
+        for: 5m
+        noDataState: NoData
+        execErrState: Error
+        annotations:
+          summary: "ClickHouse /var/lib/clickhouse is above 80% — risk of MV insert failure (NOT_ENOUGH_SPACE)"
+          runbook: "Bump the attached volume in DigitalOcean, or drop oversized ClickHouse system log tables (text_log, trace_log, etc.) to reclaim space."
+        labels:
+          severity: high
+          component: clickhouse
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: clickhouse-analytics
+            model:
+              refId: A
+              editorType: sql
+              queryType: sql
+              format: 1
+              rawSql: |
+                SELECT
+                  now() AS t,
+                  (1.0 - free_space / total_space) * 100 AS pct_used
+                FROM system.disks
+                WHERE name = 'default'
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              reducer: last
+              expression: A
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [80]
+                  operator:
+                    type: and
+                  query:
+                    params: [B]
+                  reducer:
+                    type: last
+                  type: query
+
+      - uid: clickhouse-disk-usage-90
+        title: ClickHouse data volume > 90% used (critical)
+        condition: C
+        for: 2m
+        noDataState: NoData
+        execErrState: Error
+        annotations:
+          summary: "ClickHouse /var/lib/clickhouse is above 90% — inserts are likely failing now"
+        labels:
+          severity: critical
+          component: clickhouse
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: clickhouse-analytics
+            model:
+              refId: A
+              editorType: sql
+              queryType: sql
+              format: 1
+              rawSql: |
+                SELECT
+                  now() AS t,
+                  (1.0 - free_space / total_space) * 100 AS pct_used
+                FROM system.disks
+                WHERE name = 'default'
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              reducer: last
+              expression: A
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [90]
+                  operator:
+                    type: and
+                  query:
+                    params: [B]
+                  reducer:
+                    type: last
+                  type: query
