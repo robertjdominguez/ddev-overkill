@@ -1,0 +1,16 @@
+apiVersion: 1
+
+# Email receivers route through Grafana's built-in SMTP, which the grafana
+# service is configured to point at Resend (smtp.resend.com:587) using the
+# same RESEND_API_KEY the actions service uses for the newsletter.
+
+contactPoints:
+  - orgId: 1
+    name: rob-email
+    receivers:
+      - uid: rob-email-receiver
+        type: email
+        settings:
+          addresses: rob@dominguezdev.com
+          singleEmail: false
+        disableResolveMessage: false

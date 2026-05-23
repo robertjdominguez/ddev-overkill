@@ -1,0 +1,16 @@
+apiVersion: 1
+
+# Default notification policy: every firing alert is routed to rob-email.
+# group_wait gives near-simultaneous alerts a chance to bundle into one
+# email; repeat_interval throttles re-notifications for a still-firing
+# alert so a sustained incident doesn't spam the inbox.
+
+policies:
+  - orgId: 1
+    receiver: rob-email
+    group_by:
+      - grafana_folder
+      - alertname
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h
