@@ -34,13 +34,9 @@ export default function Home() {
       <motion.div variants={item} className={classes.deets}>
         <Title order={1}>I'm Rob, welcome to my site.</Title>
         <Text size="lg" c="dimmed">
-          I'm an{' '}
-          <Text span c="accent.5" inherit>
-            <s>software engineer</s> engineering manager
-          </Text>{' '}
-          that likes to solve problems. Currently, I'm working on product at{' '}
-          <Text component="a" href="https://promptql.io" target="_blank" inherit c="accent.5">
-            PromptQL
+          I'm an engineer that likes to solve problems. Currently, I'm architecting at{' '}
+          <Text component="a" href="https://snowflake.com" target="_blank" inherit c="accent.5">
+            Snowflake
           </Text>
           .
         </Text>

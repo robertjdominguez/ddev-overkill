@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState, usecCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import MDEditor from '@uiw/react-md-editor';
 import rehypeSanitize from 'rehype-sanitize';
@@ -7,8 +7,8 @@ import { useGetPostBySlugQuery } from '@/generated/graphql';
 import { usePageMeta } from '@/components/MetaHead';
 import { track } from '@/lib/analytics';
 import SimilarPosts from './SimilarPosts';
-import { useShowSignUp } from '../../../lib/showNewsletter.ts'
-import SubscribeModal from '../../home/components/SubscribeModal.tsx';
+import { useShowSignUp } from '../../../lib/showNewsletter';
+import SubscribeModal from '../../home/components/SubscribeModal';
 
 const container = {
   hidden: {
@@ -38,6 +38,7 @@ export default function Post() {
     skip: !slug,
   });
   const showSignUp = useShowSignUp(500);
+  const [signUpDismissed, setSignUpDismissed] = useState(false);
 
   const post = data?.posts[0];
 
@@ -70,7 +71,7 @@ export default function Post() {
         {error && <p>Error: {error.message}</p>}
         {!loading && !error && !post && <p>Post not found</p>}
       </motion.div>
-    <SubscribeModal opened={showSignUp} onClose={() => setOpened(false)} />
+    <SubscribeModal opened={showSignUp && !signUpDismissed} onClose={() => setSignUpDismissed(true)} />
       <motion.div variants={item} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-sm)' }}>
         <div style={{ color: 'var(--mantine-color-dimmed)', fontSize: '14px' }}>
           {post?.createdAt && new Date(post.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}

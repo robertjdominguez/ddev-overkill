@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TextInput, Button, Stack, Image, Group, Badge, Text, Loader } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import MDEditor from '@uiw/react-md-editor';
+import MDEditor, { commands } from '@uiw/react-md-editor';
 import { useAuth } from '@/lib/auth';
 import type { AutoSaveStatus } from '../hooks/useAutoSave';
+import type { ICommand, ExecuteState, TextAreaTextApi } from '@uiw/react-md-editor';
 
 export interface PostFormValues {
   slug: string;
@@ -51,6 +52,9 @@ export default function PostForm({
   const [image, setImage] = useState(initialValues?.image ?? '');
   const [slugManual, setSlugManual] = useState(!!initialValues?.slug);
   const [uploading, setUploading] = useState(false);
+  const [bodyUploading, setBodyUploading] = useState(false);
+  const bodyImageInputRef = useRef<HTMLInputElement>(null);
+  const bodyImageApiRef = useRef<TextAreaTextApi | null>(null);
 
   useEffect(() => {
     if (!slugManual) {
@@ -62,26 +66,63 @@ export default function PostForm({
     onAutoSave?.({ slug, title, hook, body, image });
   }, [slug, title, hook, body, image]);
 
+  const uploadImage = async (file: File): Promise<string> => {
+    const res = await fetch('/api/upload-asset?prefix=posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': file.type,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: file,
+    });
+    if (!res.ok) throw new Error('Upload failed');
+    const data = await res.json();
+    return data.url;
+  };
+
   const handleImageUpload = async (file: File | null) => {
     if (!file) return;
     setUploading(true);
     try {
-      const res = await fetch('/api/upload-asset?prefix=posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': file.type,
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: file,
-      });
-      if (!res.ok) throw new Error('Upload failed');
-      const data = await res.json();
-      setImage(data.url);
+      const url = await uploadImage(file);
+      setImage(url);
     } catch (err) {
       console.error('Image upload failed:', err);
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleBodyImageUpload = async (file: File | null) => {
+    if (!file) return;
+    setBodyUploading(true);
+    try {
+      const url = await uploadImage(file);
+      const markdown = `![image](${url})\n`;
+      bodyImageApiRef.current?.replaceSelection(markdown);
+    } catch (err) {
+      console.error('Body image upload failed:', err);
+    } finally {
+      setBodyUploading(false);
+      if (bodyImageInputRef.current) bodyImageInputRef.current.value = '';
+    }
+  };
+
+  const uploadImageCommand: ICommand = {
+    name: 'uploadImage',
+    keyCommand: 'uploadImage',
+    buttonProps: { 'aria-label': 'Upload image into body' },
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+    ),
+    execute: (_state: ExecuteState, api: TextAreaTextApi) => {
+      bodyImageApiRef.current = api;
+      bodyImageInputRef.current?.click();
+    },
   };
 
   const getValues = (): PostFormValues => ({ slug, title, hook, body, image });
@@ -172,7 +213,20 @@ export default function PostForm({
             value={body}
             onChange={(val) => setBody(val ?? '')}
             height={400}
+            commands={[...commands.getCommands(), uploadImageCommand]}
           />
+          <input
+            ref={bodyImageInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(e) => handleBodyImageUpload(e.target.files?.[0] ?? null)}
+          />
+          {bodyUploading && (
+            <Text size="sm" c="dimmed" mt="xs">
+              <Loader size="xs" /> Uploading image...
+            </Text>
+          )}
         </div>
         <Group>
           {onPublish && !isPublished && (
