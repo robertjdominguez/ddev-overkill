@@ -65,6 +65,10 @@ jobs:
             # Ensure data dirs have correct ownership for non-root containers
             mkdir -p /data/grafana && chown -R 472:472 /data/grafana
             mkdir -p /data/kafka && chown -R 1000:1000 /data/kafka
+            # booboo web UI lives here and is bind-mounted into the caddy
+            # container (see deploy/docker-compose.yml); create it so the
+            # mount can never fail a container start.
+            mkdir -p /data/booboo-web
 
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose --env-file .env -f deploy/docker-compose.yml pull frontend
@@ -83,4 +87,23 @@ jobs:
             sleep 10
           done
           echo "Health check failed after 2 minutes"
+          exit 1
+
+  check-booboo:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Booboo UI and API health
+        run: |
+          for i in $(seq 1 12); do
+            ui=$(curl -s -o /dev/null -w '%{http_code}' https://booboo.dominguezdev.com/ || true)
+            api=$(curl -s -o /dev/null -w '%{http_code}' https://booboo.dominguezdev.com/api/health || true)
+            if [ "$ui" = "200" ] && [ "$api" = "200" ]; then
+              echo "booboo health check passed (ui=$ui api=$api)"
+              exit 0
+            fi
+            echo "Attempt $i: ui=$ui api=$api, retrying in 10s..."
+            sleep 10
+          done
+          echo "booboo health check failed after 2 minutes"
           exit 1
