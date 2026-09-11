@@ -47,9 +47,10 @@ jobs:
             set -e
             cd /opt/ddev-overkill
 
-            # Reset any local modifications so git pull never fails
+            # Reset local changes/commits so we always track origin/main exactly
             git checkout -- .
-            git pull
+            git fetch origin
+            git reset --hard origin/main
 
             # Validate required env vars before deploy
             . .env
