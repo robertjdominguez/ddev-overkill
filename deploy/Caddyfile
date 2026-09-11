@@ -48,3 +48,8 @@
 analytics.{$DOMAIN:localhost} {
     reverse_proxy grafana:3000
 }
+
+# Booboo database — LibSQL (sqld) reverse proxy
+booboo.{$DOMAIN:localhost} {
+    reverse_proxy 172.18.0.1:8090
+}
