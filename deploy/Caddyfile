@@ -49,7 +49,32 @@ analytics.{$DOMAIN:localhost} {
     reverse_proxy grafana:3000
 }
 
-# Booboo database — LibSQL (sqld) reverse proxy
+# Booboo — web PWA + API (Elysia on irongiant) + LibSQL database (sqld on host)
 booboo.{$DOMAIN:localhost} {
-    reverse_proxy 172.18.0.1:8090
+    # API routes -> Elysia server on irongiant (Tailscale)
+    handle /auth/* {
+        reverse_proxy http://100.74.224.2:3000
+    }
+    handle /events {
+        reverse_proxy http://100.74.224.2:3000
+    }
+    handle /command {
+        reverse_proxy http://100.74.224.2:3000
+    }
+    handle /api/* {
+        reverse_proxy http://100.74.224.2:3000
+    }
+
+    # LibSQL HTTP API (sqld on the host, port 8090)
+    @libsql method POST
+    handle @libsql {
+        reverse_proxy 172.18.0.1:8090
+    }
+
+    # Everything else -> static web PWA with SPA fallback
+    handle {
+        root * /srv/booboo
+        try_files {path} /index.html
+        file_server
+    }
 }
