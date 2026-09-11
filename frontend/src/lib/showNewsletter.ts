@@ -13,7 +13,6 @@ export function useShowSignUp(threshold: number = 500) {
         hasFired.current = true; 
         setIsScrolled(true);
         window.removeEventListener('scroll', handleScroll);
-        console.log("Let's get them to sign up!");
         return;
       }
     };

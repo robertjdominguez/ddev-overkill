@@ -71,7 +71,9 @@ export default function Post() {
         {error && <p>Error: {error.message}</p>}
         {!loading && !error && !post && <p>Post not found</p>}
       </motion.div>
-    <SubscribeModal opened={showSignUp && !signUpDismissed} onClose={() => setSignUpDismissed(true)} />
+    <motion.div variants={item}>
+        <SubscribeModal opened={showSignUp && !signUpDismissed} onClose={() => setSignUpDismissed(true)} />
+      </motion.div>
       <motion.div variants={item} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-sm)' }}>
         <div style={{ color: 'var(--mantine-color-dimmed)', fontSize: '14px' }}>
           {post?.createdAt && new Date(post.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
