@@ -73,7 +73,7 @@ booboo.{$DOMAIN:localhost} {
 
     # Everything else -> static web PWA with SPA fallback
     handle {
-        root * /srv/booboo
+        root * /booboo
         try_files {path} /index.html
         file_server
     }

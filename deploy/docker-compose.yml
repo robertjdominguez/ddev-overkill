@@ -234,7 +234,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - frontend_build:/srv:ro
-      - /data/booboo-web:/srv/booboo:ro
+      - /data/booboo-web:/booboo:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
