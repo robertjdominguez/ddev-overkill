@@ -10,6 +10,8 @@ import SimilarPosts from './SimilarPosts';
 import { useShowSignUp } from '../../../lib/showNewsletter';
 import SubscribeModal from '../../home/components/SubscribeModal';
 
+const SIGNUP_DISMISSED_KEY = 'newsletter_signup_dismissed';
+
 const container = {
   hidden: {
     transition: {
@@ -38,7 +40,7 @@ export default function Post() {
     skip: !slug,
   });
   const showSignUp = useShowSignUp(500);
-  const [signUpDismissed, setSignUpDismissed] = useState(false);
+  const [signUpDismissed, setSignUpDismissed] = useState(() => localStorage.getItem(SIGNUP_DISMISSED_KEY) === 'true');
 
   const post = data?.posts[0];
 
@@ -72,7 +74,13 @@ export default function Post() {
         {!loading && !error && !post && <p>Post not found</p>}
       </motion.div>
     <motion.div variants={item}>
-        <SubscribeModal opened={showSignUp && !signUpDismissed} onClose={() => setSignUpDismissed(true)} />
+        <SubscribeModal
+          opened={showSignUp && !signUpDismissed}
+          onClose={() => {
+            setSignUpDismissed(true);
+            localStorage.setItem(SIGNUP_DISMISSED_KEY, 'true');
+          }}
+        />
       </motion.div>
       <motion.div variants={item} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-sm)' }}>
         <div style={{ color: 'var(--mantine-color-dimmed)', fontSize: '14px' }}>
