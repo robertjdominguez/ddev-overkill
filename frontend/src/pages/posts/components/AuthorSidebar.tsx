@@ -60,8 +60,8 @@ export default function AuthorSidebar() {
 
         <div className={classes.details}>
           <Text size="sm" c="dimmed">
-            Engineering manager solving problems at PromptQL. Former educator with a passion for
-            automating the mundane.
+            Data Platform Architect at Snowflake. Former educator with a passion for automating
+            the mundane.
           </Text>
           <Group gap="xs">
             <ActionIcon
